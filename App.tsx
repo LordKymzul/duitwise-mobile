@@ -1,12 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import AppStackGroup from './src/core/routes/stack/app-stack';
+import { COLORS } from './src/core/constant/Colors';
+
 
 export default function App() {
+
+  const colorScheme = useColorScheme();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style="auto" />
-    </View>
+      <AppStackGroup />
+    </NavigationContainer>
   );
 }
 
