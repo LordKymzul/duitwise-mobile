@@ -12,7 +12,8 @@ export const Colors = {
         tabIconSelected: tintColorLight,
         secondaryContainer: '#dcdcdc',
         tabBackgroundColor: '#e7e7e7',
-        greyColor: '#687076'
+        greyColor: '#687076',
+        onTint: '#FFFFFF'
     },
     dark: {
         text: '#ECEDEE',
@@ -24,7 +25,8 @@ export const Colors = {
         tabIconSelected: tintColorDark,
         secondaryContainer: '#464646',
         tabBackgroundColor: '#3d3d3d',
-        greyColor: '#9BA1A6'
+        greyColor: '#9BA1A6',
+        onTint: '#FFFFFF'
     },
     grey: "#242424",
     yellow: "#FFDD33",

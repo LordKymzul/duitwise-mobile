@@ -20,12 +20,13 @@ const ReceiptScreen = () => {
             justifyContent: "flex-start",
             backgroundColor: colors.background
         }}>
+
             <View style={{
                 alignSelf: "center",
                 flexDirection: "column",
                 alignItems: "center",
                 marginTop: Sizes.spacing.lg,
-                gap: Sizes.spacing.sm
+                gap: Sizes.spacing.sm,
 
             }}>
                 <Text style={[getTitleStyle(Sizes.fontSize.xl, colors.onBackground)]}>
@@ -37,88 +38,53 @@ const ReceiptScreen = () => {
             </View>
 
             <View style={{
+                backgroundColor: colors.background,
                 width: "100%",
-                paddingHorizontal: Sizes.padding.lg
+
             }}>
                 <View style={{
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    marginTop: Sizes.spacing.lg,
-                    gap: Sizes.spacing.lg,
-                    borderColor: colors.secondaryContainer,
-                    borderWidth: 1,
-                    borderRadius: Sizes.borderRadius.lg,
-                    padding: Sizes.padding.lg
+                    width: "100%",
+                    paddingHorizontal: Sizes.padding.lg
                 }}>
-
-                    <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                        Relief Categories
-                    </Text>
-
-                    <ReceiptCard colors={colors} />
-
-                    <ReceiptCard colors={colors} />
-
-                    <ReceiptCard colors={colors} />
-
-
-
-                </View>
-            </View>
-
-
-            <View style={{
-                width: "100%",
-                paddingHorizontal: Sizes.padding.lg
-            }}>
-                <View style={{
-                    flexDirection: "column",
-                    marginTop: Sizes.spacing.lg,
-                    gap: Sizes.spacing.lg,
-                    borderColor: colors.secondaryContainer,
-                    borderWidth: 1,
-                    borderRadius: Sizes.borderRadius.lg,
-                    padding: Sizes.padding.lg
-                }}>
-
                     <View style={{
-                        width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: Sizes.spacing.sm
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        marginTop: Sizes.spacing.lg,
+                        gap: Sizes.spacing.lg,
+                        borderColor: colors.secondaryContainer,
+                        borderWidth: 1,
+                        borderRadius: Sizes.borderRadius.lg,
+                        padding: Sizes.padding.lg
                     }}>
 
                         <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                            Relief Transactions
+                            Relief Categories
                         </Text>
 
-                        <Ionicons name="filter-outline" size={Sizes.iconSize.lg} color={colors.onBackground} />
+                        <ReceiptCard colors={colors} />
+
+                        <ReceiptCard colors={colors} />
+
+                        <ReceiptCard colors={colors} />
+
+
 
                     </View>
+                </View>
 
+                <View style={{
+                    width: "100%",
+                    paddingHorizontal: Sizes.padding.lg
+                }}>
                     <View style={{
                         flexDirection: "column",
-                        gap: Sizes.spacing.sm
+                        marginTop: Sizes.spacing.lg,
+                        gap: Sizes.spacing.lg,
+                        borderColor: colors.secondaryContainer,
+                        borderWidth: 1,
+                        borderRadius: Sizes.borderRadius.lg,
+                        padding: Sizes.padding.lg
                     }}>
-                        <View style={{
-                            width: "100%",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: Sizes.spacing.sm
-
-                        }}>
-
-                            <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                                Diesel
-                            </Text>
-
-                            <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                                RM 1,200
-                            </Text>
-
-                        </View>
 
                         <View style={{
                             width: "100%",
@@ -126,42 +92,80 @@ const ReceiptScreen = () => {
                             justifyContent: "space-between",
                             alignItems: "center",
                             gap: Sizes.spacing.sm
-
                         }}>
 
-                            <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                                Approved stations only
+                            <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
+                                Relief Transactions
                             </Text>
 
+                            <Ionicons name="filter-outline" size={Sizes.iconSize.lg} color={colors.onBackground} />
+
+                        </View>
+
+                        <View style={{
+                            flexDirection: "column",
+                            gap: Sizes.spacing.sm
+                        }}>
+                            <View style={{
+                                width: "100%",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: Sizes.spacing.sm
+
+                            }}>
+
+                                <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                                    Diesel
+                                </Text>
+
+                                <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                                    RM 1,200
+                                </Text>
+
+                            </View>
+
+                            <View style={{
+                                width: "100%",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: Sizes.spacing.sm
+
+                            }}>
+
+                                <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                                    Approved stations only
+                                </Text>
+
+                                <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                                    Monthly
+                                </Text>
+
+                            </View>
+                        </View>
+
+                        <View style={{
+                            width: "100%",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: Sizes.spacing.md
+                        }}>
+
+                            <Ionicons name="calendar-outline" size={Sizes.iconSize.sm} color={colors.onBackground} />
+
                             <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                                Monthly
+                                Next Refill: 12 Oct 2024
                             </Text>
 
                         </View>
-                    </View>
 
-                    <View style={{
-                        width: "100%",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: Sizes.spacing.md
-                    }}>
 
-                        <Ionicons name="calendar-outline" size={Sizes.iconSize.sm} color={colors.onBackground} />
-
-                        <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                            Next Refill: 12 Oct 2024
-                        </Text>
 
                     </View>
-
-
-
                 </View>
+
             </View>
-
-
-
         </View>
     )
 }

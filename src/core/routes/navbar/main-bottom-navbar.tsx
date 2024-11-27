@@ -7,6 +7,8 @@ import {
     Ionicons
 } from "@expo/vector-icons";
 import ReceiptScreen from "../../../features/receipt/presentation/view/screens/receipt-screen";
+import LoanScreen from "../../../features/loan/presentation/view/screens/loan-screen";
+import ExpensesScreen from "../../../features/expenses/presentation/view/screens/expenses-screen";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,8 +40,8 @@ const MainBottomNavbar = () => {
                 },
             })}>
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Expenses" component={HomeScreen} />
-            <Tab.Screen name="Loans" component={HomeScreen} />
+            <Tab.Screen name="Expenses" component={ExpensesScreen} />
+            <Tab.Screen name="Loans" component={LoanScreen} />
             <Tab.Screen name="Snaps" component={ReceiptScreen} />
         </Tab.Navigator>
     )
