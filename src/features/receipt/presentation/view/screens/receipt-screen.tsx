@@ -1,7 +1,7 @@
 import { View, Text, useColorScheme } from "react-native";
-import { COLORS } from "../../../../../core/constant/Colors";
-import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
-import { Sizes } from "../../../../../core/constant/Sizes";
+import { COLORS } from "@core/constant/Colors";
+import { getSubtitleStyle, getTitleStyle } from "@core/constant/Texts";
+import { Sizes } from "@core/constant/Sizes";
 import { Dimensions } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 

@@ -1,13 +1,15 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../../shared/presentation/screen/home-screen";
-import { COLORS } from "../../constant/Colors";
+import HomeScreen from "@features/receipt/presentation/view/screens/home-screen";import { COLORS } from "../../constant/Colors";
 import { useColorScheme } from "react-native";
+
+
 import {
     Feather,
     Ionicons
 } from "@expo/vector-icons";
-import ReceiptScreen from "../../../features/receipt/presentation/view/screens/receipt-screen";
-
+import ReceiptScreen from "@features/receipt/presentation/view/screens/receipt-screen";
+import { TransactionScreen } from "@features/receipt/presentation/view/screens/transaction-screen";
+import { ReceiptClaimedScreen } from "@features/receipt/presentation/view/screens/receipt-claimed-screen";
 const Tab = createBottomTabNavigator();
 
 const MainBottomNavbar = () => {
@@ -38,8 +40,8 @@ const MainBottomNavbar = () => {
                 },
             })}>
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Expenses" component={HomeScreen} />
-            <Tab.Screen name="Loans" component={HomeScreen} />
+            <Tab.Screen name="Expenses" component={TransactionScreen} />
+            <Tab.Screen name="Loans" component={ReceiptClaimedScreen} />
             <Tab.Screen name="Snaps" component={ReceiptScreen} />
         </Tab.Navigator>
     )
