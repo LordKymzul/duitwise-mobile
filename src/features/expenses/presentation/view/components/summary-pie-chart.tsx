@@ -5,6 +5,10 @@ import { useColorScheme, StyleSheet } from "react-native";
 import { COLORS } from "@/src/core/constant/Colors";
 
 
+import RNSpeedometer from 'react-native-speedometer'
+
+
+// npm i--save - dev @types/react-native-speedometer
 
 const generateRandomColor = (): string => {
     const randomColor = Math.floor(Math.random() * 0xffffff);
@@ -48,6 +52,12 @@ const SummaryPieChart = () => {
             >
 
             </PolarChart> */}
+
+            <RNSpeedometer
+                value={100}
+
+                size={100}
+            />
 
             <PolarChart
                 data={data}

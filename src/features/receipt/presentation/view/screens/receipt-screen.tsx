@@ -1,161 +1,201 @@
-import { View, Text, useColorScheme } from "react-native";
+import { View, Text, useColorScheme, ScrollView, TouchableOpacity } from "react-native";
 import { COLORS } from "../../../../../core/constant/Colors";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { Dimensions } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-
+import { useLayoutEffect } from "react";
+import { NavigationProp } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParams } from "@/src/core/shared/types/navigation";
+import React from "react";
 
 const ReceiptScreen = () => {
 
 
+    const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+
     const colorScheme = useColorScheme();
     const colors = COLORS[colorScheme ?? 'dark'];
+    const isDark = colorScheme === "dark";
+
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: colors.tint,
+                shadowColor: 'transparent', // Remove header bottom shadow
+                elevation: 0, // Remove elevation shadow on Android
+            },
+            headerTitle: "",
+        })
+    }, [isDark, colors, navigation])
+
 
     return (
-        <View style={{
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            backgroundColor: colors.background
-        }}>
-
-            <View style={{
-                alignSelf: "center",
-                flexDirection: "column",
-                alignItems: "center",
-                marginTop: Sizes.spacing.lg,
-                gap: Sizes.spacing.sm,
-
-            }}>
-                <Text style={[getTitleStyle(Sizes.fontSize.xl, colors.onBackground)]}>
-                    RM 3,400
-                </Text>
-                <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                    Total Incentives Saved
-                </Text>
-            </View>
-
-            <View style={{
-                backgroundColor: colors.background,
-                width: "100%",
-
-            }}>
-                <View style={{
-                    width: "100%",
-                    paddingHorizontal: Sizes.padding.lg
+        <>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={{
+                    flex: 1,
+                    backgroundColor: colors.tint
                 }}>
-                    <View style={{
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        marginTop: Sizes.spacing.lg,
-                        gap: Sizes.spacing.lg,
-                        borderColor: colors.secondaryContainer,
-                        borderWidth: 1,
-                        borderRadius: Sizes.borderRadius.lg,
-                        padding: Sizes.padding.lg
-                    }}>
+                <View style={{
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                }}>
 
-                        <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                            Relief Categories
+                    <View style={{
+                        alignSelf: "center",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        marginBottom: Sizes.spacing.xxl,
+                        gap: Sizes.spacing.sm,
+                        backgroundColor: colors.tint,
+                        width: "100%",
+                    }}>
+                        <Text style={[getTitleStyle(Sizes.fontSize.xl, colors.onTint)]}>
+                            RM 3,400
                         </Text>
-
-                        <ReceiptCard colors={colors} />
-
-                        <ReceiptCard colors={colors} />
-
-                        <ReceiptCard colors={colors} />
-
-
-
+                        <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onTint)]}>
+                            Total Incentives Saved
+                        </Text>
                     </View>
-                </View>
 
-                <View style={{
-                    width: "100%",
-                    paddingHorizontal: Sizes.padding.lg
-                }}>
                     <View style={{
-                        flexDirection: "column",
-                        marginTop: Sizes.spacing.lg,
-                        gap: Sizes.spacing.lg,
-                        borderColor: colors.secondaryContainer,
-                        borderWidth: 1,
-                        borderRadius: Sizes.borderRadius.lg,
-                        padding: Sizes.padding.lg
-                    }}>
+                        height: "100%",
+                        backgroundColor: colors.background,
+                        width: "100%",
+                        borderTopEndRadius: Sizes.borderRadius.xl,
+                        borderTopStartRadius: Sizes.borderRadius.xl,
 
+                        padding: Sizes.spacing.xl,
+
+                    }}>
                         <View style={{
-                            width: "100%",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: Sizes.spacing.sm
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+
+                            gap: Sizes.spacing.lg,
                         }}>
 
                             <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                                Relief Transactions
+                                Relief Categories
                             </Text>
 
-                            <Ionicons name="filter-outline" size={Sizes.iconSize.lg} color={colors.onBackground} />
+                            <ReceiptCard colors={colors} />
+
+                            <ReceiptCard colors={colors} />
+
+                            <ReceiptCard colors={colors} />
+
+
 
                         </View>
 
                         <View style={{
                             flexDirection: "column",
-                            gap: Sizes.spacing.sm
+                            marginTop: Sizes.spacing.lg,
+                            gap: Sizes.spacing.lg,
+                            borderColor: colors.secondaryContainer,
+                            borderWidth: 1,
+                            borderRadius: Sizes.borderRadius.lg,
+                            padding: Sizes.padding.lg
                         }}>
+
                             <View style={{
                                 width: "100%",
                                 flexDirection: "row",
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 gap: Sizes.spacing.sm
-
                             }}>
 
-                                <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                                    Diesel
+                                <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
+                                    Relief Transactions
                                 </Text>
 
-                                <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                                    RM 1,200
-                                </Text>
+                                <Ionicons name="filter-outline" size={Sizes.iconSize.lg} color={colors.onBackground} />
 
+                            </View>
+
+                            <View style={{
+                                flexDirection: "column",
+                                gap: Sizes.spacing.sm
+                            }}>
+                                <View style={{
+                                    width: "100%",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    gap: Sizes.spacing.sm
+
+                                }}>
+
+                                    <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                                        Diesel
+                                    </Text>
+
+                                    <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                                        RM 1,200
+                                    </Text>
+
+                                </View>
+
+                                <View style={{
+                                    width: "100%",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    gap: Sizes.spacing.sm
+
+                                }}>
+
+                                    <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                                        Approved stations only
+                                    </Text>
+
+                                    <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                                        Monthly
+                                    </Text>
+
+                                </View>
                             </View>
 
                             <View style={{
                                 width: "100%",
                                 flexDirection: "row",
-                                justifyContent: "space-between",
                                 alignItems: "center",
-                                gap: Sizes.spacing.sm
-
+                                gap: Sizes.spacing.md
                             }}>
 
-                                <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                                    Approved stations only
-                                </Text>
+                                <Ionicons name="calendar-outline" size={Sizes.iconSize.sm} color={colors.onBackground} />
 
                                 <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                                    Monthly
+                                    Next Refill: 12 Oct 2024
                                 </Text>
 
                             </View>
                         </View>
 
                         <View style={{
+                            marginTop: Sizes.spacing.lg,
                             width: "100%",
                             flexDirection: "row",
                             alignItems: "center",
-                            gap: Sizes.spacing.md
+                            gap: Sizes.spacing.md,
+                            borderWidth: 1,
+                            borderColor: colors.secondaryContainer,
+                            borderRadius: Sizes.borderRadius.md,
+                            padding: Sizes.padding.md
                         }}>
 
-                            <Ionicons name="calendar-outline" size={Sizes.iconSize.sm} color={colors.onBackground} />
+                            <Ionicons name="information-circle-outline" size={Sizes.iconSize.md} color={colors.onBackground} />
 
-                            <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                                Next Refill: 12 Oct 2024
+                            <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground), { flex: 1 }]}>
+                                Don’t forget to keep your receipts! You’ll need them for tax filing
                             </Text>
 
                         </View>
@@ -163,10 +203,29 @@ const ReceiptScreen = () => {
 
 
                     </View>
+
                 </View>
 
-            </View>
-        </View>
+
+
+            </ScrollView>
+
+            <TouchableOpacity
+                style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 50,
+                    position: 'absolute',
+                    bottom: 10,
+                    right: 10,
+                    height: 50,
+                    backgroundColor: colors.tint,
+                    borderRadius: 100,
+                }}
+            >
+                <Ionicons name="add" size={Sizes.iconSize.lg} color={colors.onTint} />
+            </TouchableOpacity>
+        </>
     )
 }
 
