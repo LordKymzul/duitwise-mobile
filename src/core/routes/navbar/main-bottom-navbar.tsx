@@ -25,6 +25,7 @@ const MainBottomNavbar = () => {
 
     return (
         <Tab.Navigator
+            id={undefined}
             screenOptions={({ route, navigation }) => ({
                 tabBarActiveTintColor: colors.tint,
                 tabBarIcon: ({ color, size, focused }) => {

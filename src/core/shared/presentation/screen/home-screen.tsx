@@ -15,6 +15,15 @@ import { COLORS } from 'src/core/constant/Colors';
 import { useLayoutEffect } from 'react';
 import { Sizes } from 'src/core/constant/Sizes';
 import { chartData } from '../../utils/helper';
+import Animated, { 
+    useAnimatedScrollHandler, 
+    useAnimatedStyle, 
+    useSharedValue, 
+    interpolateColor,
+    withTiming
+} from 'react-native-reanimated';
+import ModalChooseBank from '@features/portfolio/presentation/view/components/modal-choose-bank';
+import { BankPortfolio } from 'src/core/constant/Data';
 
 type RecurringPayment = {
     name: string;
@@ -26,35 +35,50 @@ type RecurringPayment = {
 const { width, height } = Dimensions.get('window');
 
 const HomeScreen = () => {
-
-
     const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
     const colorScheme = useColorScheme();
     const colors = COLORS[colorScheme ?? 'dark'];
     const isDark = colorScheme === 'dark';
 
+    const scrollY = useSharedValue(0);
+    const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+    
+    const scrollHandler = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            scrollY.value = event.contentOffset.y;
+        },
+    });
+
+    const headerAnimatedStyle = useAnimatedStyle(() => {
+        const backgroundColor = interpolateColor(
+            scrollY.value,
+            [0, 100],
+            ['#29C445', colors.background]
+        );
+
+        return {
+            backgroundColor: withTiming(backgroundColor, { duration: 150 }),
+        };
+    });
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: "",
-            headerStyle: {
-                backgroundColor: ['#29C445', '#007A25', '#5ECC72']
+            headerStyle: headerAnimatedStyle,
+            headerTransparent: true,
+        });
+    }, [headerAnimatedStyle, isDark]);
 
-            }
-        })
-    }, [isDark])
-
-
-
-
+    const [isBankModalVisible, setIsBankModalVisible] = React.useState(false);
 
     const handleAddClick = () => {
-        console.log('Add button clicked');
+        setIsBankModalVisible(true);
     };
 
-    const handleDrawerPress = () => {
-        console.log('Drawer button pressed');
-        // Implement your drawer navigation logic here
+    const handleBankSelect = (bank: BankPortfolio) => {
+        setIsBankModalVisible(false);
+        navigation.navigate('LoginPortfolio', { bank });
     };
 
     return (
@@ -65,12 +89,14 @@ const HomeScreen = () => {
                 end={{ x: 0, y: 1 }}
                 style={[styles.backgroundGradient,]}
             />
-            <Header onDrawerPress={handleDrawerPress} />
+            <Header />
 
-            <ScrollView
-                style={[styles.content, { borderRadius: Sizes.borderRadius.lg, }]}
+            <AnimatedScrollView
+                style={[styles.content, { borderRadius: Sizes.borderRadius.lg }]}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
+                onScroll={scrollHandler}
+                scrollEventThrottle={16}
             >
 
                 <BankCardSlider />
@@ -83,7 +109,7 @@ const HomeScreen = () => {
                 <FinancialFitness
                     score={80}
                     status="Strong"
-                    description="Lorem"
+                    description="Based on savings, debt, emergency funds, income usage, and investments"
                 />
 
                 <TouchableOpacity style={styles.chartContainer} onPress={() => {
@@ -103,13 +129,19 @@ const HomeScreen = () => {
 
                 <RecurringPayments
                     payments={[
-                        { name: 'Youtube Subscription', amount: 12, status: 'active' },
-                        { name: 'Apple Subscription', amount: 12, status: 'active' },
-                        { name: 'Spotify Subscription', amount: 12, status: 'pending' },
+                        { name: 'Youtube Subscription', amount: 32, status: 'active' },
+                        { name: 'Apple Subscription', amount: 11.90, status: 'active' },
+                        { name: 'Spotify Subscription', amount: 23.90, status: 'pending' },
                     ]}
                     billingDate="29 December 2025"
                 />
-            </ScrollView>
+            </AnimatedScrollView>
+
+            <ModalChooseBank
+                visible={isBankModalVisible}
+                onClose={() => setIsBankModalVisible(false)}
+               
+            />
         </View>
     );
 };

@@ -1,26 +1,19 @@
 import { RouteProp } from "@react-navigation/native";
-import { Loan } from "src/core/constant/Data";
+import { BankPortfolio, Loan } from "src/core/constant/Data";
 import { ReceiptEntity } from "src/features/receipt/presentation/view/components/recepit-card";
 import { TransactionItem } from "src/types/transaction";
 
 export type RootStackParams = {
-    // CryptoDetail: {
-    //     id: string;
-    //     symbol?: string | null;
-    // },
-    // Settings: undefined,
-    // CryptoSearch: undefined,
-    // CryptoFilterModal: undefined,
-    // MoozoneActive: {
-    //     moozones: MoozoneEntity[];
-    // },
+    Home: undefined,
     Portfolio: undefined,
     PortfolioLoanDetail: { loan: Loan },
     Transaction: undefined,
     TransactionDetails: { transaction: TransactionItem },
     ReceiptDetail: { receipt: ReceiptEntity },
-    ReceiptAttached: { receipt: ReceiptAttachedEntity }
-
+    ReceiptAttached: { receipt: ReceiptAttachedEntity },
+    LoginPortfolio: {
+        bank: BankPortfolio
+    }
 }
 
 export interface ReceiptAttachedEntity {
@@ -31,6 +24,8 @@ export interface ReceiptAttachedEntity {
 }
 
 
+
+export type LoginPortfolioScreenRouteProp = RouteProp<RootStackParams, 'LoginPortfolio'>;
 export type PortfolioLoanDetailScreenRouteProp = RouteProp<RootStackParams, 'PortfolioLoanDetail'>;
 export type TransactionDetailsScreenRouteProp = RouteProp<RootStackParams, 'TransactionDetails'>;
 export type ReceiptDetailScreenRouteProp = RouteProp<RootStackParams, 'ReceiptDetail'>;

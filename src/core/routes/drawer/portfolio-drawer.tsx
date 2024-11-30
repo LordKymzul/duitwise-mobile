@@ -65,6 +65,7 @@ export function PortfolioDrawer() {
                 />
             }}
         >
+            <Stack.Screen name='MainBottomNavbar' options={{ headerShown: false }} component={MainBottomNavbar} />
             <Stack.Screen name='Portfolio' options={{ headerShown: true }} component={PortfolioScreen} />
         </Drawer.Navigator>
     )

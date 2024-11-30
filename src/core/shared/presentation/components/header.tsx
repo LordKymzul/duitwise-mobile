@@ -2,15 +2,22 @@ import * as React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Sizes } from 'src/core/constant/Sizes';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-const Header = ({ onDrawerPress }: { onDrawerPress: () => void }) => {
+const Header = () => {
+    const navigation = useNavigation();
+
+    const handleDrawerPress = () => {
+        navigation.dispatch(DrawerActions.toggleDrawer());
+    };
+
     return (
         <View style={[styles.container, { marginTop: Sizes.spacing.lg }]}>
             <View style={styles.headerContent}>
                 <TouchableOpacity
-                    onPress={onDrawerPress}
+                    onPress={handleDrawerPress}
                     style={styles.menuButton}
                 >
                     <Feather name="menu" size={24} color="#000000" />

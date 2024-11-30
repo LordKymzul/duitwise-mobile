@@ -11,7 +11,7 @@ interface FinancialFitnessProps {
 const FinancialFitness: React.FC<FinancialFitnessProps> = ({
   score = 82,
   status = 'Strong',
-  description = 'Lorem'
+  description = 'Your comprehensive financial health score based on savings, debt, emergency funds, income usage, and investments'
 }) => {
   const size = 120;
   const strokeWidth = 15;
@@ -63,7 +63,7 @@ const FinancialFitness: React.FC<FinancialFitnessProps> = ({
     <View style={styles.container}>
       <View style={styles.leftContent}>
         <Text style={styles.title}>Financial Fitness</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.description} numberOfLines={3}>{description}</Text>
         <View style={styles.statusContainer}>
           <Text style={styles.statusText}>{status}</Text>
         </View>
@@ -133,13 +133,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#000',
-    marginBottom: 4,
+    marginBottom: -4,
     lineHeight: 28,
   },
   description: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#666',
     marginBottom: 8,
+    marginRight: 10,
   },
   statusContainer: {
     backgroundColor: '#F1F9F1',
@@ -157,13 +158,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    marginRight: 30,
+    marginRight: 20,
   },
   scoreTextContainer: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     top: 20,
+    marginLeft: 20,
   },
   scoreContainer: {
     alignItems: 'center',

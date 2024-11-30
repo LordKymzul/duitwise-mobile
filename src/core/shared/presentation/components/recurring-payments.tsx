@@ -14,9 +14,9 @@ interface RecurringPaymentsProps {
 
 const RecurringPayments: React.FC<RecurringPaymentsProps> = ({ 
   payments = [
-    { name: 'Youtube Subscription', amount: 12, status: 'active' },
-    { name: 'Apple Subscription', amount: 12, status: 'active' },
-    { name: 'Spotify Subscription', amount: 12, status: 'pending' },
+    { name: 'Youtube Subscription', amount: 32, status: 'active' },
+    { name: 'Apple Subscription', amount: 11.90, status: 'active' },
+    { name: 'Spotify Subscription', amount: 23.90, status: 'pending' },
   ],
   billingDate = '29 December 2024'
 }) => {
@@ -57,7 +57,7 @@ const RecurringPayments: React.FC<RecurringPaymentsProps> = ({
                 }]} />
                 <Text style={styles.paymentName}>{payment.name}</Text>
               </View>
-              <Text style={styles.paymentAmount}>{payment.amount}$</Text>
+              <Text style={styles.paymentAmount}>RM {payment.amount}</Text>
             </View>
           ))}
         </View>
