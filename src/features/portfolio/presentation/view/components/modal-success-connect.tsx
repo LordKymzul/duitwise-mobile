@@ -38,7 +38,7 @@ const ModalSuccessConnect: React.FC<ModalSuccessConnectProps> = ({
             onPress={onClose}
             isPrimary={true}
             color="#29C445"
-            style={styles.button}
+            
           />
         </View>
       </View>

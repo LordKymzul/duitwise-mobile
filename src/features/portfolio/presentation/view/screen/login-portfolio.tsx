@@ -41,7 +41,6 @@ const LoginPortfolio = () => {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    navigation.navigate('Home');
   };
 
   useLayoutEffect(() => {
@@ -62,26 +61,26 @@ const LoginPortfolio = () => {
               height={80} 
               width={80} 
               borderRadius={24}
-              style={styles.bankLogo}
+            
             />
-            <Text style={[styles.bankName, { color: colors.text }]}>{bank.name}</Text>
+            <Text style={[styles.bankName, { color: colors.onBackground }]}>{bank.bankName}</Text>
           </View>
 
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          <Text style={[styles.subtitle, { color: colors.onBackground }]}>
             Please input your bank details for seamless integration
           </Text>
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Bank's Username</Text>
+              <Text style={[styles.label, { color: colors.onBackground }]}>Bank's Username</Text>
               <TextInput
                 style={[styles.input, { 
-                  backgroundColor: colors.card,
-                  borderColor: colors.border,
-                  color: colors.text
+                  backgroundColor: colors.background,
+                  borderColor: colors.secondaryContainer,
+                
                 }]}
                 placeholder="Please enter your bank's username"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.secondaryContainer}
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
@@ -89,15 +88,14 @@ const LoginPortfolio = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Password</Text>
+              <Text style={[styles.label, { color: colors.onBackground }]}>Password</Text>
               <TextInput
                 style={[styles.input, { 
-                  backgroundColor: colors.card,
-                  borderColor: colors.border,
-                  color: colors.text
+                  backgroundColor: colors.background,
+                  borderColor: colors.secondaryContainer,
                 }]}
                 placeholder="Please enter your bank's password"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.secondaryContainer}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -105,15 +103,14 @@ const LoginPortfolio = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.text }]}>Portfolio's Name</Text>
+              <Text style={[styles.label, { color: colors.onBackground }]}>Portfolio's Name</Text>
               <TextInput
                 style={[styles.input, { 
-                  backgroundColor: colors.card,
-                  borderColor: colors.border,
-                  color: colors.text
+                  backgroundColor: colors.background,
+                  borderColor: colors.secondaryContainer,
                 }]}
                 placeholder="Give name for your portfolio"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.secondaryContainer}
                 value={portfolioName}
                 onChangeText={setPortfolioName}
               />
@@ -128,7 +125,7 @@ const LoginPortfolio = () => {
             isPrimary={true}
             color={colors.tint}
             borderRadius={16}
-            style={styles.confirmButton}
+            
           />
         </View>
       </SafeAreaView>
@@ -136,7 +133,8 @@ const LoginPortfolio = () => {
       <ModalSuccessConnect
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
-        bankName={bank.name}
+        bankName={bank.bankName}
+        
       />
     </>
   );
