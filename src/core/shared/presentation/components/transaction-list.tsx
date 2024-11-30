@@ -3,6 +3,9 @@ import { View, Text, FlatList, StyleSheet, Pressable, Modal, SectionList } from 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TransactionDetailsBox } from './transaction-details-box';
 import { TransactionItem } from 'src/types/transaction';
+import DropdownModal from './dropdown-modal';
+import ModalDropdown from 'react-native-modal-dropdown';
+
 
 interface TransactionListProps {
   transactions: TransactionItem[];
@@ -39,12 +42,22 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Transactions</Text>
-        <Pressable onPress={() => setShowPicker(true)} style={styles.picker}>
+        {/* <Pressable onPress={() => setShowPicker(true)} style={styles.picker}>
           <Text style={styles.pickerText}>{timeFrame}</Text>
           <MaterialCommunityIcons name="chevron-down" size={24} color="#333" />
-        </Pressable>
-      </View>
+        </Pressable> */}
+        <ModalDropdown options={timeFrameOptions}
+          onSelect={(index, value) => setTimeFrame(value)}
+          defaultValue={timeFrame}
+          textStyle={styles.pickerText}
+          dropdownTextStyle={styles.optionText}
+          style={styles.picker}
+          renderRightComponent={() => <MaterialCommunityIcons name="chevron-down" size={24} color="#333" />}
 
+        />
+
+      </View>
+      {/* 
       <Modal visible={showPicker} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={() => setShowPicker(false)}>
           <View style={styles.modalView}>
@@ -63,7 +76,17 @@ export const TransactionList: React.FC<TransactionListProps> = ({
           </View>
         </Pressable>
       </Modal>
-      
+       */}
+
+
+
+      {/* <DropdownModal
+        showPicker={showPicker}
+        setShowPicker={() => setShowPicker(false)}
+        timeFrame={timeFrame}
+        setTimeFrame={(index) => setTimeFrame(timeFrameOptions[index])}
+        timeFrameOptions={timeFrameOptions}
+      /> */}
       <SectionList
         sections={groupTransactionsByDate(transactions)}
         keyExtractor={(item) => item.id.toString()}

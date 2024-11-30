@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "@features/receipt/presentation/view/screens/home-screen";import { COLORS } from "../../constant/Colors";
+import { COLORS } from "../../constant/Colors";
 import { useColorScheme } from "react-native";
 
 
@@ -10,6 +10,10 @@ import {
 import ReceiptScreen from "@features/receipt/presentation/view/screens/receipt-screen";
 import { TransactionScreen } from "@features/receipt/presentation/view/screens/transaction-screen";
 import { ReceiptClaimedScreen } from "@features/receipt/presentation/view/screens/receipt-claimed-screen";
+import ExpensesScreen from "src/features/expenses/presentation/view/screens/expenses-screen";
+import LoanScreen from "src/features/loan/presentation/view/screens/loan-screen";
+import HomeScreen from "src/core/shared/presentation/screen/home-screen";
+import { LinearGradient } from "expo-linear-gradient";
 const Tab = createBottomTabNavigator();
 
 const MainBottomNavbar = () => {
@@ -39,10 +43,19 @@ const MainBottomNavbar = () => {
                     return <Ionicons name={iconname as keyof typeof Ionicons.glyphMap} color={color} size={size} />
                 },
             })}>
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Expenses" component={TransactionScreen} />
-            <Tab.Screen name="Loans" component={ReceiptClaimedScreen} />
-            <Tab.Screen name="Snaps" component={ReceiptScreen} />
+            <Tab.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+            <Tab.Screen name="Expenses" component={ExpensesScreen} />
+            <Tab.Screen options={{ headerShown: true }} name="Loans" component={LoanScreen} />
+            <Tab.Screen options={{
+                headerTitle: "",
+                headerShadowVisible: false,
+                headerShown: true,
+                headerStyle: {
+                    elevation: 0,
+                    borderBottomWidth: 0,
+                },
+                headerBackground: () => <LinearGradient colors={['#4CAF50', '#4CAF50']} style={{ flex: 1 }} />
+            }} name="Snaps" component={ReceiptScreen} />
         </Tab.Navigator>
     )
 }

@@ -1,14 +1,20 @@
 import * as React from 'react';
-import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, StyleSheet, Dimensions, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import BankCardSlider from '@core/shared/presentation/components/bankcard-slider';
 import CardDetailsBox from '@core/shared/presentation/components/card-details-box';
-import Header from '@core/shared/presentation/components/header';  
+import Header from '@core/shared/presentation/components/header';
 import NetWorthChart from '@core/shared/presentation/components/net-worth-chart';
 import StressLevel from '@core/shared/presentation/components/stress-level';
 import ExpensesGraph from '@core/shared/presentation/components/expenses-small-graph';
 import RecurringPayments from '@core/shared/presentation/components/recurring-payments';
 import FinancialFitness from '@core/shared/presentation/components/financial-fitness';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParams } from 'src/core/shared/types/navigation';
+import { COLORS } from 'src/core/constant/Colors';
+import { useLayoutEffect } from 'react';
+import { Sizes } from 'src/core/constant/Sizes';
+import { chartData } from '../../utils/helper';
 
 type RecurringPayment = {
     name: string;
@@ -18,33 +24,30 @@ type RecurringPayment = {
 };
 
 const { width, height } = Dimensions.get('window');
-const chartData = [
-    {
-        value: 25,
-        key: 'gx-bank',
-        svg: { fill: '#4285F4' },
-        label: 'GX Bank'
-    },
-    {
-        value: 10,
-        key: 'bank-islam',
-        svg: { fill: '#34A853' },
-        label: 'Bank Islam'
-    },
-    {
-        value: 30,
-        key: 'maybank',
-        svg: { fill: '#FBBC05' },
-        label: 'Maybank'
-    },
-    {
-        value: 25,
-        key: 'cimb',
-        svg: { fill: '#EA4335' },
-        label: 'CIMB'
-    },
-];
+
 const HomeScreen = () => {
+
+
+    const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+    const colorScheme = useColorScheme();
+    const colors = COLORS[colorScheme ?? 'dark'];
+    const isDark = colorScheme === 'dark';
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: "",
+            headerStyle: {
+                backgroundColor: ['#29C445', '#007A25', '#5ECC72']
+
+            }
+        })
+    }, [isDark])
+
+
+
+
+
     const handleAddClick = () => {
         console.log('Add button clicked');
     };
@@ -58,34 +61,37 @@ const HomeScreen = () => {
         <View style={styles.container}>
             <LinearGradient
                 colors={['#29C445', '#007A25', '#5ECC72']}
-                locations={[1, 0.6, 1]}  
+                locations={[1, 0.6, 1]}
                 end={{ x: 0, y: 1 }}
-                style={styles.backgroundGradient}
+                style={[styles.backgroundGradient,]}
             />
-            
-            <ScrollView 
-                style={styles.content}
+            <Header onDrawerPress={handleDrawerPress} />
+
+            <ScrollView
+                style={[styles.content, { borderRadius: Sizes.borderRadius.lg, }]}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                <Header onDrawerPress={handleDrawerPress} />
+
                 <BankCardSlider />
-                <CardDetailsBox 
+                <CardDetailsBox
                     name="Hazwan Jr."
                     expDate="09/29"
                     onAddClick={handleAddClick}
                 />
-                
-                <FinancialFitness 
+
+                <FinancialFitness
                     score={80}
                     status="Strong"
                     description="Lorem"
                 />
-                
-                <View style={styles.chartContainer}>
+
+                <TouchableOpacity style={styles.chartContainer} onPress={() => {
+                    navigation.navigate("Portfolio")
+                }}>
                     <NetWorthChart totalAmount={10000} data={chartData} />
-                </View>
-                
+                </TouchableOpacity>
+
                 <View style={styles.metricsContainer}>
                     <View style={styles.metricItem}>
                         <StressLevel value={35} trend="down" />
@@ -94,12 +100,12 @@ const HomeScreen = () => {
                         <ExpensesGraph amount={55100} percentage={-5} />
                     </View>
                 </View>
-                
-                <RecurringPayments 
+
+                <RecurringPayments
                     payments={[
-                        { name: 'Youtube Subscription', amount: 12, status: 'active'},
+                        { name: 'Youtube Subscription', amount: 12, status: 'active' },
                         { name: 'Apple Subscription', amount: 12, status: 'active' },
-                        { name: 'Spotify Subscription', amount: 12, status: 'pending'},
+                        { name: 'Spotify Subscription', amount: 12, status: 'pending' },
                     ]}
                     billingDate="29 December 2025"
                 />

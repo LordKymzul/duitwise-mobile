@@ -1,13 +1,46 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
+    "strict": false,
     "paths": {
-      "@assets/*": ["./assets/*"],
-      "src/*": ["./src/*"],
-      "@core/*": ["./src/core/*"],
-      "@features/*": ["./src/features/*"],
-      "@types/*": ["./src/types/*"]
+      "@assets/*": [
+        "./assets/*"
+      ],
+      "src/*": [
+        "./src/*"
+      ],
+      "@core/*": [
+        "./src/core/*"
+      ],
+      "@features/*": [
+        "./src/features/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ]
     },
   }
 }
+// {
+//   "extends": "expo/tsconfig.base",
+//   "compilerOptions": {
+//     "strict": true,
+//     "paths": {
+//       "@assets/*": [
+//         "./assets/*"
+//       ],
+//       "src/*": [
+//         "./src/*"
+//       ],
+//       "@core/*": [
+//         "./src/core/*"
+//       ],
+//       "@features/*": [
+//         "./src/features/*"
+//       ],
+//       "@types/*": [
+//         "./src/types/*"
+//       ]
+//     },
+//   }
+// }

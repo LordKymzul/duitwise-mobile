@@ -12,9 +12,9 @@ import Carousel, { TAnimationStyle } from "react-native-reanimated-carousel";
 function BankCardSlider() {
     const { width: PAGE_WIDTH, height: windowHeight } = Dimensions.get('window');
     const PAGE_HEIGHT = 220; // Reduced height for better vertical positioning
-    
+
     const directionAnimVal = useSharedValue(0);
-    
+
     const cardData = [
         { id: 1, image: require('@assets/MBCard.png') },
         { id: 2, image: require('@assets/GXCard.png') },
@@ -24,7 +24,7 @@ function BankCardSlider() {
     const animationStyle: TAnimationStyle = React.useCallback(
         (value: number) => {
             'worklet';
-            
+
             const zIndex = Math.ceil(
                 interpolate(
                     value,
@@ -33,7 +33,7 @@ function BankCardSlider() {
                     Extrapolation.CLAMP
                 )
             );
-            
+
             // Reduce horizontal movement and add slight offset
             const translateX = interpolate(
                 value,
@@ -48,15 +48,15 @@ function BankCardSlider() {
                 [-20, 0, 20],
                 Extrapolation.CLAMP
             );
-            
-            
+
+
             const scale = interpolate(
                 value,
                 [-1, 0, 1],
                 [0.95, 1, 0.95],
                 Extrapolation.CLAMP
             );
-    
+
             return {
                 transform: [
                     { translateX },
@@ -114,8 +114,8 @@ function BankCardSlider() {
     };
 
     return (
-        <View style={{ 
-            flex: 1, 
+        <View style={{
+            flex: 1,
             backgroundColor: 'transparent',
             justifyContent: 'flex-start',
             alignItems: 'center',
@@ -142,7 +142,7 @@ function BankCardSlider() {
                 }}
                 mode="horizontal-stack"
                 modeConfig={{
-                    stackInterval:1000,
+                    stackInterval: 1000,
                     snapDirection: 'right',
                     count: 1,
                     rotateZIndex: 2,

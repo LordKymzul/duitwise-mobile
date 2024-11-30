@@ -1,25 +1,40 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import React, { useLayoutEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { TransactionItem } from 'src/types/transaction';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Share } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { ReceiptAttachedEntity, RootStackParams, TransactionDetailsScreenRouteProp } from 'src/core/shared/types/navigation';
+import DefaultGoBackButton from 'src/core/shared/presentation/components/default-goback-button';
+import Toast from 'react-native-toast-message';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { analyzeReceipt } from '../../zustand/receipt-attach-store';
+import * as FileSystem from 'expo-file-system';
 
-type RootStackParamList = {
-  TransactionDetails: { transaction: TransactionItem };
-};
 
-type TransactionDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TransactionDetails'>;
-
-interface Props {
-  route: TransactionDetailsScreenRouteProp;
-}
-
-export const TransactionDetailsScreen: React.FC<Props> = ({ route }) => {
+export const TransactionDetailsScreen = () => {
+  const route = useRoute<TransactionDetailsScreenRouteProp>();
   const { transaction } = route.params;
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: "Transaction Details",
+      headerLeft: () => <DefaultGoBackButton onPress={() => navigation.goBack()} />,
+      headerRight: () => <TouchableOpacity
+        style={styles.shareButton}
+        onPress={handleShare}
+      >
+        <Ionicons name="share-outline" size={24} color="#333" />
+      </TouchableOpacity>
+
+    });
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -29,6 +44,7 @@ export const TransactionDetailsScreen: React.FC<Props> = ({ route }) => {
       year: 'numeric'
     });
   };
+
 
   const handleShare = async () => {
     try {
@@ -50,10 +66,13 @@ Reference: 12138173128312
   };
 
   const handleAttachReceipt = async () => {
+    setIsLoading(true);
     try {
       // Request permissions
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+
+      console.log(permissionResult);
+
       if (!permissionResult.granted) {
         alert('Permission to access camera roll is required!');
         return;
@@ -68,17 +87,49 @@ Reference: 12138173128312
       });
 
       if (!result.canceled) {
-        // Handle the selected image
-        // You can upload the image to your server here
-        console.log('Selected image:', result.assets[0].uri);
-        
-        // TODO: Implement your upload logic here
-        // For now, just show a success message
-        alert('Receipt attached successfully!');
+
+
+
+
+        const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem.EncodingType.Base64 });
+
+
+
+        const response = await analyzeReceipt(base64, "AIzaSyDiEuFsPIya8em34GDtytDYXsOC1aJ48h8");
+
+
+
+        console.log('Response', response);
+
+        const receiptAttached: ReceiptAttachedEntity = {
+          receiptImage: result.assets[0].uri,
+          receiptName: response.receiptName,
+          price: response.price,
+          date: response.date
+        }
+
+        navigation.navigate("ReceiptAttached", {
+          receipt: receiptAttached
+        });
+
+
+        Toast.show({
+          text1: "Success",
+          text2: "Receipt attached successfully!",
+          type: "success"
+        });
       }
     } catch (error) {
       console.error('Error attaching receipt:', error);
-      alert('Failed to attach receipt. Please try again.');
+      alert('Failed to attach receipt. Please try again.' + error);
+      Toast.show({
+        text1: "Failed to attach receipt. Please try again.",
+        text2: error instanceof Error ? error.message : String(error),
+        type: "error"
+      });
+    } finally {
+
+      setIsLoading(false);
     }
   };
 
@@ -86,22 +137,7 @@ Reference: 12138173128312
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView bounces={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()} 
-            style={styles.backButton}
-          >
-            <Ionicons name="chevron-back" size={28} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Transaction Details</Text>
-          <TouchableOpacity 
-            style={styles.shareButton}
-            onPress={handleShare}
-          >
-            <Ionicons name="share-outline" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
+
 
         {/* Amount Card */}
         <LinearGradient
@@ -151,20 +187,24 @@ Reference: 12138173128312
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity 
-            style={styles.attachButton}
-            onPress={handleAttachReceipt}
-          >
-            <MaterialCommunityIcons name="attachment" size={24} color="#fff" />
-            <Text style={styles.attachButtonText}>Attach Receipt</Text>
-          </TouchableOpacity>
+        {
+          isLoading ? <ActivityIndicator size="large" color="#4CAF50" /> : (
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.attachButton}
+                onPress={handleAttachReceipt}
+              >
+                <MaterialCommunityIcons name="attachment" size={24} color="#fff" />
+                <Text style={styles.attachButtonText}>Attach Receipt</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.reportButton}>
-            <MaterialCommunityIcons name="flag-outline" size={24} color="#666" />
-            <Text style={styles.reportButtonText}>Report Issue</Text>
-          </TouchableOpacity>
-        </View>
+              <TouchableOpacity style={styles.reportButton}>
+                <MaterialCommunityIcons name="flag-outline" size={24} color="#666" />
+                <Text style={styles.reportButtonText}>Report Issue</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        }
       </ScrollView>
     </SafeAreaView>
   );

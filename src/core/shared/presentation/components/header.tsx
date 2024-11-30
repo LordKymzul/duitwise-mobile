@@ -1,25 +1,26 @@
 import * as React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { Sizes } from 'src/core/constant/Sizes';
 
 const { width } = Dimensions.get('window');
 
-const Header = ({ onDrawerPress }) => {
+const Header = ({ onDrawerPress }: { onDrawerPress: () => void }) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { marginTop: Sizes.spacing.lg }]}>
             <View style={styles.headerContent}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     onPress={onDrawerPress}
                     style={styles.menuButton}
                 >
                     <Feather name="menu" size={24} color="#000000" />
                 </TouchableOpacity>
-                
+
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>Evening Mr.Hazwan,</Text>
                     <Text style={styles.subtitle}>Track your financial freely</Text>
                 </View>
-                
+
                 <TouchableOpacity style={styles.profileButton}>
                     <Feather name="user" size={24} color="#FFFFFF" />
                 </TouchableOpacity>

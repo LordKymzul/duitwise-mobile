@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,19 +13,42 @@ import {
   Share,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Colors } from '@core/constant/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DefaultGoBackButton from 'src/core/shared/presentation/components/default-goback-button';
+import { ReceiptDetailScreenRouteProp } from 'src/core/shared/types/navigation';
 
 const { width } = Dimensions.get('window');
 
 export const ReceiptClaimedScreen: React.FC = () => {
+
   const navigation = useNavigation();
+  const { params } = useRoute<ReceiptDetailScreenRouteProp>();
+
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: params.receipt.receiptTitle ?? "Receipt Detail",
+      headerLeft: () => <DefaultGoBackButton onPress={() => navigation.goBack()} />,
+      headerRight: () => <TouchableOpacity style={styles.filterButton}>
+        <MaterialCommunityIcons name="tune-vertical" size={24} color="#333" />
+      </TouchableOpacity>
+    })
+  }, [])
+
+
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const scrollY = new Animated.Value(0);
+
+
+
+
 
   const headerHeight = scrollY.interpolate({
     inputRange: [0, 100],
@@ -70,18 +93,6 @@ export const ReceiptClaimedScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       {/* Fixed Header */}
       <Animated.View style={[styles.header, { height: headerHeight }]}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()} 
-            style={styles.backButton}
-          >
-            <Ionicons name="chevron-back" size={28} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Electronics</Text>
-          <TouchableOpacity style={styles.filterButton}>
-            <MaterialCommunityIcons name="tune-vertical" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
 
         {/* Enhanced Search Bar with Date Picker */}
         <View style={styles.searchWrapper}>
@@ -95,15 +106,15 @@ export const ReceiptClaimedScreen: React.FC = () => {
               placeholderTextColor={Colors.light.icon}
             />
             {searchQuery.length > 0 && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setSearchQuery('')}
                 style={styles.clearButton}
               >
-                <Ionicons name="close-circle-filled" size={20} color={Colors.light.icon} />
+                <Ionicons name="close-circle" size={20} color={Colors.light.icon} />
               </TouchableOpacity>
             )}
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.searchFilterChip}
             onPress={showDatePicker}
           >
@@ -184,7 +195,7 @@ export const ReceiptClaimedScreen: React.FC = () => {
                   <Text style={styles.detailLabel}>Item Name</Text>
                   <Text style={styles.detailValue}>Air Pod</Text>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.shareButton}
                   onPress={handleShare}
                 >
@@ -225,7 +236,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   backButton: {
     padding: 8,
