@@ -1,16 +1,19 @@
 import { View, Text, useColorScheme, ActivityIndicator } from "react-native";
-import { COLORS } from "../../../../../core/constant/Colors";
+import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import { SliderForm } from "../../../../../core/shared/presentation/components/slider-form";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
-import { carLoansData } from "src/core/constant/Data";
+import { calculateTotalMonthlyPayments, portfolioData } from "src/core/constant/Data";
 import DefaultButton from "src/core/shared/presentation/components/default-button";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import BankLoanCard, { BankLoanDetailProps } from "../components/bank-loan-card";
-import { CarFilteredLoanInfo, filterCarLoans } from "../../zustand/car-loan-store";
-import { FilteredLoanInfo } from "../../zustand/home-loan-store";
 import CheckBox from 'react-native-check-box'
 import Toast from "react-native-toast-message";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import LoanStressSheet from "../components/loan-stress-sheet";
+import { filterCarLoans } from "../../zustand/loan-store";
+import { calculateLoanEligibility, CarFilteredLoanInfo, carLoansData } from "../../zustand/car-loan-store";
 
 
 // npm i--save - dev @types/react-native-check-box
@@ -54,6 +57,26 @@ const LoanCarScreen = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const [stressValue, setStressValue] = useState<number>(0);
+
+
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
+
+
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior={"close"}
+            />
+        ),
+        []
+    );
+
 
     const handleCalculation = async () => {
         try {
@@ -87,7 +110,7 @@ const LoanCarScreen = () => {
                     type: "success"
                 });
             }
-            setFilteredLoans(result);
+            setFilteredLoans(result as CarFilteredLoanInfo[]);
 
         } catch (error) {
             if (error instanceof Error) {
@@ -98,6 +121,8 @@ const LoanCarScreen = () => {
         }
     }
 
+
+
     const handleLoanDuration = (index: number) => {
         const updatedLoanDuration = loanDuration.map((item, idx) => {
             return { ...item, isChecked: idx === index }
@@ -107,72 +132,90 @@ const LoanCarScreen = () => {
         setSelectedLoanDuration(updatedLoanDuration[index].value);
     }
 
+    const handleStressTest = () => {
+
+        try {
+            const analysis = calculateLoanEligibility(portfolioData, financingAmount, selectedLoanDuration, 3000);
+
+            console.log("Analysis: ", analysis);
+
+            const currentDSR = analysis?.[0].currentDSR;
+            setStressValue(currentDSR ?? 0);
+
+        } catch (e) {
+            Toast.show({
+                text1: "An error occurred",
+                text2: "Please try again",
+                type: "error"
+            });
+        }
+
+    }
+
+    const handlePresentModalPress = () => {
+        bottomSheetRef.current?.present();
+        handleStressTest();
+    }
 
     return (
 
-        <View style={{
-            flexDirection: "column",
-            width: "100%",
-            paddingHorizontal: Sizes.padding.lg,
-            marginTop: Sizes.spacing.lg,
-            gap: Sizes.spacing.xl
-        }}>
-            <SliderForm
-                title="Financial Amount"
-                value={financingAmount}
-                minimumValue={1000}
-                maximumValue={10000}
-                unit="RM"
-                onChange={(value) => { setFinancingAmount(value) }}
-                color={colors.tint}
-            />
-
+        <>
             <View style={{
                 flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-
+                width: "100%",
+                paddingHorizontal: Sizes.padding.lg,
+                marginTop: Sizes.spacing.lg,
+                gap: Sizes.spacing.xl
             }}>
-                <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                    Loan Duration
-                </Text>
+                <SliderForm
+                    title="Financial Amount"
+                    value={financingAmount}
+                    minimumValue={1000}
+                    maximumValue={10000}
+                    unit="RM"
+                    onChange={(value) => { setFinancingAmount(value) }}
+                    color={Colors.carLoan[0]}
+                />
 
                 <View style={{
                     flexDirection: "column",
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
-                    gap: Sizes.spacing.md,
-                    marginTop: Sizes.spacing.lg
+
                 }}>
+                    <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                        Loan Duration
+                    </Text>
+
+                    <View style={{
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        gap: Sizes.spacing.md,
+                        marginTop: Sizes.spacing.lg
+                    }}>
+                        {
+                            loanDuration.map((item, index) => {
+                                return <LoanDurationCheckbox key={index} colors={colors} isChecked={item.isChecked} onClick={() => handleLoanDuration(index)} title={item.title} description={item.description} />
+                            })
+                        }
+
+
+
+                    </View>
+
                     {
-                        loanDuration.map((item, index) => {
-                            return <LoanDurationCheckbox key={index} colors={colors} isChecked={item.isChecked} onClick={() => handleLoanDuration(index)} title={item.title} description={item.description} />
-                        })
-                    }
-
-
-
-                </View>
-
-                {
-                    isLoading ? (
-                        <ActivityIndicator
-                            size="large"
-                            color={colors.tint}
-                            style={{ justifyContent: "center", alignItems: "center", marginTop: Sizes.spacing.lg, width: "100%" }}
-                        />
-                    ) : (
-                        <View style={{
-                            width: "100%",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginTop: Sizes.spacing.lg
-                        }}>
+                        isLoading ? (
+                            <ActivityIndicator
+                                size="large"
+                                color={colors.tint}
+                                style={{ justifyContent: "center", alignItems: "center", marginTop: Sizes.spacing.lg, width: "100%" }}
+                            />
+                        ) : (
 
                             <View style={{
                                 width: "100%",
-                                marginBottom: Sizes.spacing.md
+                                marginTop: Sizes.spacing.lg
                             }}>
                                 <DefaultButton
                                     title="Check Availability"
@@ -183,78 +226,87 @@ const LoanCarScreen = () => {
 
                                 />
                             </View>
+                        )
+                    }
 
-                            <View style={{
-                                width: "100%",
-                                marginTop: Sizes.spacing.md
-                            }}>
-                                <DefaultButton
-                                    title="Check Financial Stress"
-                                    onPress={() => { handleCalculation }}
-                                    color={colors.tint}
-                                    borderRadius={100}
-                                    isPrimary={false}
-                                />
-                            </View>
-                        </View>
-                    )
-                }
+                </View>
 
-            </View>
-
-
-            <View style={{
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                gap: Sizes.spacing.md,
-            }}>
 
                 <View style={{
                     flexDirection: "column",
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
-                    gap: Sizes.spacing.sm
+                    gap: Sizes.spacing.md,
                 }}>
-                    <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                        Available Loans
-                    </Text>
-                    <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                        Found 4 loans
-                    </Text>
+
+                    <View style={{
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        gap: Sizes.spacing.sm
+                    }}>
+                        <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
+                            Available Loans
+                        </Text>
+                        <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                            Found 4 loans
+                        </Text>
+                    </View>
+
+                    {
+                        filteredLoans.length > 0 && (
+                            filteredLoans.map((loan, index) => {
+                                const details: BankLoanDetailProps[] = [
+                                    { title: "Interest Rate", value: loan.interest_rate },
+                                    { title: "Estimated Monthly Payment", value: loan.estimated_monthly_min.toString() },
+                                    { title: "Car Condition", value: loan.car_condition },
+                                    { title: "Tenure Period", value: loan.tenure_period },
+                                ]
+                                return <BankLoanCard
+                                    key={index}
+                                    bankName={loan.bank_name}
+                                    loanType="Car Loan"
+                                    details={details}
+                                    onStressTestPress={handlePresentModalPress}
+                                    onApplyPress={() => { }}
+                                />
+                            })
+                        )
+                    }
+
+                    {
+                        filteredLoans.length === 0 && (
+                            <View style={{
+                                width: "100%",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginVertical: Sizes.spacing.lg
+                            }}>
+                                <Text>No matching loans found</Text>
+                            </View>
+                        )
+                    }
                 </View>
-
-                {
-                    filteredLoans.length > 0 && (
-                        filteredLoans.map((loan, index) => {
-                            const details: BankLoanDetailProps[] = [
-                                { title: "Interest Rate", value: loan.interest_rate },
-                                { title: "Estimated Monthly Payment", value: loan.estimated_monthly_min.toString() },
-                                { title: "Car Condition", value: loan.car_condition },
-                                { title: "Tenure Period", value: loan.tenure_period },
-                            ]
-                            return <BankLoanCard key={index} bankName={loan.bank_name} loanType="Car Loan" details={details} />
-                        })
-                    )
-                }
-
-                {
-                    filteredLoans.length === 0 && (
-                        <View style={{
-                            width: "100%",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginVertical: Sizes.spacing.lg
-                        }}>
-                            <Text>No matching loans found</Text>
-                        </View>
-                    )
-                }
             </View>
-        </View>
+
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={1}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+            >
+                <BottomSheetView>
+                    <LoanStressSheet value={stressValue ?? 0} />
+
+
+                </BottomSheetView>
+            </BottomSheetModal>
+        </>
+
     )
 }
+
 
 const LoanDurationCheckbox = (
     { colors, isChecked, onClick, title, description }: { colors: any, isChecked: boolean, onClick: () => void, title: string, description: string }

@@ -46,7 +46,17 @@ const MainBottomNavbar = () => {
             })}>
             <Tab.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
             <Tab.Screen name="Expenses" component={ExpensesScreen} />
-            <Tab.Screen options={{ headerShown: true }} name="Loans" component={LoanScreen} />
+            <Tab.Screen options={{
+
+                headerTitle: "",
+                headerShadowVisible: false,
+                headerShown: true,
+                headerStyle: {
+                    elevation: 0,
+                    borderBottomWidth: 0,
+                },
+                headerBackground: () => <LinearGradient colors={['#4CAF50', '#4CAF50']} style={{ flex: 1 }} />
+            }} name="Loans" component={LoanScreen} />
             <Tab.Screen options={{
                 headerTitle: "",
                 headerShadowVisible: false,

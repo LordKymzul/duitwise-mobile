@@ -9,12 +9,11 @@ import DefaultEntityCard from "../../../../../core/shared/presentation/component
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import TransactionCard from "../components/transaction-card";
 import { PATHS } from "src/core/constant/Paths";
+import { TransactionDetailsData, TransactionDetailsEntity } from "src/core/constant/Data";
 
 import PortfolioLineChart from "src/features/portfolio/presentation/view/components/portfolio-line-chart";
 import { formatDateDayandTime } from "src/core/shared/utils/helper";
-import { TransactionDetailsData } from "src/core/constant/Data";
 import { useEffect, useState } from "react";
-import { TransactionDetailsEntity } from "src/core/constant/Data";
 
 
 const transactions = [

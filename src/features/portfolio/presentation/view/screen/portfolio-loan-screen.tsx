@@ -21,8 +21,7 @@ export const PortfolioLoanScreen = () => {
 
 
     const {
-        portfolio,
-        setPortfolio,
+
         selectedPortfolio,
         setSelectedPortfolio
     } = usePortfolioStore()

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 // import RNSpeedometer from 'react-native-speedometer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DefaultGauge from './default-gauge';
 
 interface StressLevelProps {
   value?: number;
@@ -68,35 +69,18 @@ const StressLevel: React.FC<StressLevelProps> = ({ value = 35, trend = 'down' })
           <Text style={[styles.percentage, { color: statusColor }]}>
             {value}%
           </Text>
-          <MaterialCommunityIcons 
-            name={trendIcon} 
-            size={12} 
-            color={trendColor} 
+          <MaterialCommunityIcons
+            name={trendIcon}
+            size={12}
+            color={trendColor}
             style={styles.trendIcon}
           />
         </View>
       </View>
-      <View style={styles.speedometerContainer}>
-        {/* <RNSpeedometer 
-          value={value} 
-          size={60}
-          labels={labels}
-          labelStyle={styles.labelStyle}
-          labelNoteStyle={styles.labelNoteStyle}
-          innerCircleStyle={styles.innerCircleStyle}
-          outerCircleStyle={styles.outerCircleStyle}
-          minValue={0}
-          maxValue={100}
-          wrapperStyle={{ marginTop: -4 }}
-          halfCircleStyle={{ 
-            strokeWidth: 3,
-            strokeLinecap: 'round'
-          }}
-        />
-        <Text style={[styles.stressText, { color: statusColor }]}>
-          {statusText}
-        </Text> */}
+      <View style={{ width: 80, height: 80, alignItems: 'center', justifyContent: 'center', alignSelf: "center" }}>
+        <DefaultGauge value={value} />
       </View>
+
     </View>
   );
 };

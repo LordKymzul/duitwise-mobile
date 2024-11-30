@@ -14,6 +14,7 @@ import { Area, CartesianChart, Line, useChartPressState } from "victory-native";
 
 import { View } from "react-native";
 import { COLORS } from "src/core/constant/Colors";
+import { Sizes } from "src/core/constant/Sizes";
 
 
 // const inter = require("../../roboto.ttf");
@@ -46,14 +47,12 @@ export const PortfolioLineChart = () => {
 
     return (
         <View style={styles.container}>
+
             <Box
                 width={Dimensions.get('window').width}
                 height={200}
-                borderWidth={0}
-                borderColor="transparent"
-
+                paddingTop={Sizes.spacing.lg}
             >
-
                 <CartesianChart
                     data={chartData}
                     xKey="day"

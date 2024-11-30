@@ -1,147 +1,3 @@
-// Types and interfaces
-interface HomeLoan {
-    bank_name: string;
-    monthly_payment: string;
-    profit_rate: string;
-    max_tenure: string;
-    max_margin: string;
-    lock_in_period: string;
-    full_flexi_loan: string;
-    remarks: string;
-}
-
-export interface FilteredLoanInfo {
-    bank_name: string;
-    profit_rate: string;
-    max_tenure: string;
-    max_margin: string;
-    lock_in_period: string;
-    full_flexi_loan: string;
-    estimated_monthly: number;
-    min_rate: number;
-    max_rate: number;
-    remarks: string;
-}
-
-interface HomeLoansData {
-    home_loans: HomeLoan[];
-}
-
-/**
- * Filter home loans based on property value and various criteria.
- * 
- * @param propertyValue - Value of property (100k-2m)
- * @param loanPercentage - Desired loan percentage (50-100)
- * @param flexiLoan - Optional: Filter by flexi loan feature
- * @param financeType - Optional: 'islamic' or 'conventional'
- * @param lockInPeriod - Optional: Filter by lock in period presence
- * @param bankName - Optional: Filter by specific bank
- * @param maxTenureYears - Optional: Maximum loan tenure in years
- * @returns Array of filtered suitable loans
- */
-export function filterHomeLoans(
-    propertyValue: number,
-    loanPercentage: number,
-    flexiLoan?: boolean,
-    financeType?: 'islamic' | 'conventional',
-    lockInPeriod?: boolean,
-    bankName?: string,
-    maxTenureYears?: number
-): FilteredLoanInfo[] {
-    // Validate input parameters
-    if (propertyValue < 100000 || propertyValue > 2000000) {
-        throw new Error("Property value must be between RM 100,000 and RM 2,000,000");
-    }
-    if (loanPercentage < 50 || loanPercentage > 100) {
-        throw new Error("Loan percentage must be between 50% and 100%");
-    }
-
-    // Calculate required loan amount
-    const requiredLoan = propertyValue * (loanPercentage / 100);
-    const suitableLoans: FilteredLoanInfo[] = [];
-
-    homeLoansData.home_loans.forEach((loan) => {
-        // Parse margin percentage
-        const maxMargin = parseFloat(loan.max_margin.replace('%', ''));
-
-        // Check if loan meets margin requirement
-        if (loanPercentage > maxMargin) {
-            return;
-        }
-
-        // Parse and check bank name if specified
-        if (bankName && !loan.bank_name.split(' ')[0].toLowerCase().includes(bankName.toLowerCase())) {
-            return;
-        }
-
-        // Check flexi loan preference if specified
-        if (flexiLoan !== undefined) {
-            const loanFlexi = loan.full_flexi_loan.toLowerCase() === 'yes';
-            if (flexiLoan !== loanFlexi) {
-                return;
-            }
-        }
-
-        // Check finance type if specified
-        if (financeType) {
-            const isIslamic = loan.bank_name.toLowerCase().match(/-i|islamic|murabahah|takaful/) !== null;
-            if ((financeType.toLowerCase() === 'islamic') !== isIslamic) {
-                return;
-            }
-        }
-
-        // Check lock in period if specified
-        if (lockInPeriod !== undefined) {
-            const hasLockIn = parseFloat(loan.lock_in_period.split(' ')[0]) > 0;
-            if (lockInPeriod !== hasLockIn) {
-                return;
-            }
-        }
-
-        // Check tenure if specified
-        if (maxTenureYears) {
-            const loanMaxTenure = parseInt(loan.max_tenure.split(' ')[0]);
-            if (maxTenureYears > loanMaxTenure) {
-                return;
-            }
-        }
-
-        // Calculate monthly payment for the required loan amount
-        // Adjust the monthly payment based on the actual loan amount
-        const adjustmentFactor = requiredLoan / 500000; // Original calculations based on 500k
-        const monthlyPayment = parseFloat(loan.monthly_payment.replace('RM ', '').replace(',', '')) * adjustmentFactor;
-
-        // Parse interest/profit rate
-        const rate = loan.profit_rate.replace('%', '').trim();
-        let minRate: number;
-        let maxRate: number;
-
-        if (rate.includes('-')) {
-            [minRate, maxRate] = rate.split('-').map(r => parseFloat(r));
-        } else {
-            minRate = maxRate = parseFloat(rate);
-        }
-
-        // Create loan info object
-        const loanInfo: FilteredLoanInfo = {
-            bank_name: loan.bank_name,
-            profit_rate: loan.profit_rate,
-            max_tenure: loan.max_tenure,
-            max_margin: loan.max_margin,
-            lock_in_period: loan.lock_in_period,
-            full_flexi_loan: loan.full_flexi_loan,
-            estimated_monthly: Math.round(monthlyPayment * 100) / 100,
-            min_rate: minRate,
-            max_rate: maxRate,
-            remarks: loan.remarks
-        };
-
-        suitableLoans.push(loanInfo);
-    });
-
-    // Sort by minimum interest/profit rate
-    return suitableLoans.sort((a, b) => a.min_rate - b.min_rate);
-}
 
 // Example data structure
 const homeLoansData: HomeLoansData = {
@@ -770,6 +626,152 @@ const homeLoansData: HomeLoansData = {
     ]
 };
 
+
+// Types and interfaces
+interface HomeLoan {
+    bank_name: string;
+    monthly_payment: string;
+    profit_rate: string;
+    max_tenure: string;
+    max_margin: string;
+    lock_in_period: string;
+    full_flexi_loan: string;
+    remarks: string;
+}
+
+export interface FilteredLoanInfo {
+    bank_name: string;
+    profit_rate: string;
+    max_tenure: string;
+    max_margin: string;
+    lock_in_period: string;
+    full_flexi_loan: string;
+    estimated_monthly: number;
+    min_rate: number;
+    max_rate: number;
+    remarks: string;
+}
+
+interface HomeLoansData {
+    home_loans: HomeLoan[];
+}
+
+/**
+ * Filter home loans based on property value and various criteria.
+ * 
+ * @param propertyValue - Value of property (100k-2m)
+ * @param loanPercentage - Desired loan percentage (50-100)
+ * @param flexiLoan - Optional: Filter by flexi loan feature
+ * @param financeType - Optional: 'islamic' or 'conventional'
+ * @param lockInPeriod - Optional: Filter by lock in period presence
+ * @param bankName - Optional: Filter by specific bank
+ * @param maxTenureYears - Optional: Maximum loan tenure in years
+ * @returns Array of filtered suitable loans
+ */
+export function filterHomeLoans(
+    propertyValue: number,
+    loanPercentage: number,
+    flexiLoan?: boolean,
+    financeType?: 'islamic' | 'conventional',
+    lockInPeriod?: boolean,
+    bankName?: string,
+    maxTenureYears?: number
+): FilteredLoanInfo[] {
+    // Validate input parameters
+    if (propertyValue < 100000 || propertyValue > 2000000) {
+        throw new Error("Property value must be between RM 100,000 and RM 2,000,000");
+    }
+    if (loanPercentage < 50 || loanPercentage > 100) {
+        throw new Error("Loan percentage must be between 50% and 100%");
+    }
+
+    // Calculate required loan amount
+    const requiredLoan = propertyValue * (loanPercentage / 100);
+    const suitableLoans: FilteredLoanInfo[] = [];
+
+    homeLoansData.home_loans.forEach((loan) => {
+        // Parse margin percentage
+        const maxMargin = parseFloat(loan.max_margin.replace('%', ''));
+
+        // Check if loan meets margin requirement
+        if (loanPercentage > maxMargin) {
+            return;
+        }
+
+        // Parse and check bank name if specified
+        if (bankName && !loan.bank_name.split(' ')[0].toLowerCase().includes(bankName.toLowerCase())) {
+            return;
+        }
+
+        // Check flexi loan preference if specified
+        if (flexiLoan !== undefined) {
+            const loanFlexi = loan.full_flexi_loan.toLowerCase() === 'yes';
+            if (flexiLoan !== loanFlexi) {
+                return;
+            }
+        }
+
+        // Check finance type if specified
+        if (financeType) {
+            const isIslamic = loan.bank_name.toLowerCase().match(/-i|islamic|murabahah|takaful/) !== null;
+            if ((financeType.toLowerCase() === 'islamic') !== isIslamic) {
+                return;
+            }
+        }
+
+        // Check lock in period if specified
+        if (lockInPeriod !== undefined) {
+            const hasLockIn = parseFloat(loan.lock_in_period.split(' ')[0]) > 0;
+            if (lockInPeriod !== hasLockIn) {
+                return;
+            }
+        }
+
+        // Check tenure if specified
+        if (maxTenureYears) {
+            const loanMaxTenure = parseInt(loan.max_tenure.split(' ')[0]);
+            if (maxTenureYears > loanMaxTenure) {
+                return;
+            }
+        }
+
+        // Calculate monthly payment for the required loan amount
+        // Adjust the monthly payment based on the actual loan amount
+        const adjustmentFactor = requiredLoan / 500000; // Original calculations based on 500k
+        const monthlyPayment = parseFloat(loan.monthly_payment.replace('RM ', '').replace(',', '')) * adjustmentFactor;
+
+        // Parse interest/profit rate
+        const rate = loan.profit_rate.replace('%', '').trim();
+        let minRate: number;
+        let maxRate: number;
+
+        if (rate.includes('-')) {
+            [minRate, maxRate] = rate.split('-').map(r => parseFloat(r));
+        } else {
+            minRate = maxRate = parseFloat(rate);
+        }
+
+        // Create loan info object
+        const loanInfo: FilteredLoanInfo = {
+            bank_name: loan.bank_name,
+            profit_rate: loan.profit_rate,
+            max_tenure: loan.max_tenure,
+            max_margin: loan.max_margin,
+            lock_in_period: loan.lock_in_period,
+            full_flexi_loan: loan.full_flexi_loan,
+            estimated_monthly: Math.round(monthlyPayment * 100) / 100,
+            min_rate: minRate,
+            max_rate: maxRate,
+            remarks: loan.remarks
+        };
+
+        suitableLoans.push(loanInfo);
+    });
+
+    // Sort by minimum interest/profit rate
+    return suitableLoans.sort((a, b) => a.min_rate - b.min_rate);
+}
+
 // Example usage
 try {
     const filteredLoans = filterHomeLoans(
@@ -803,3 +805,203 @@ try {
         console.log('An unknown error occurred');
     }
 }
+
+
+
+export const analyzeMortgage = (
+    propertyValue: number,
+    loanPercentage: number,
+    monthlyIncome: number,
+    existingLoanPayments: number,
+    otherCommitments: number,
+    options?: {
+        flexiLoan?: boolean;
+        financeType?: 'islamic' | 'conventional';
+        bankName?: string;
+        maxTenureYears?: number;
+        requiresLockInPeriod?: boolean;
+    }
+) => {
+
+
+    // DSR categories
+    const dsrCategories = {
+        COMFORTABLE: {
+            min: 0,
+            max: 40,
+            color: "green",
+            description: "Comfortable - Good position to take on new loans"
+        },
+        MODERATE: {
+            min: 41,
+            max: 60,
+            color: "yellow",
+            description: "Moderate - Consider carefully before taking new loans"
+        },
+        CAUTIOUS: {
+            min: 61,
+            max: 79,
+            color: "orange",
+            description: "Cautious - Very limited loan capacity"
+        },
+        STRESSFUL: {
+            min: 80,
+            max: 100,
+            color: "red",
+            description: "Stressful - Unable to take new loans"
+        }
+    };
+
+    // Input validation
+    if (propertyValue < 100000 || propertyValue > 2000000) {
+        throw new Error("Property value must be between RM 100,000 and RM 2,000,000");
+    }
+    if (loanPercentage < 50 || loanPercentage > 100) {
+        throw new Error("Loan percentage must be between 50% and 100%");
+    }
+
+    // Helper functions
+    const calculateDsr = (totalCommitments: number) =>
+        (totalCommitments / monthlyIncome) * 100;
+
+    const getDsrCategory = (dsr: number) => {
+        const categories = Object.keys(dsrCategories) as Array<keyof typeof dsrCategories>;
+
+        for (const category of categories) {
+            const info = dsrCategories[category];
+            if (dsr >= info.min && dsr <= info.max) {
+                return { category, info };
+            }
+        }
+        return {
+            category: "STRESSFUL",
+            info: dsrCategories.STRESSFUL
+        };
+    };
+
+    // String search helper
+    const containsText = (text: string, search: string): boolean => {
+        return text.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+    };
+
+    // Filter and analyze loans
+    const requiredLoan = propertyValue * (loanPercentage / 100);
+    const baseCommitments = existingLoanPayments + otherCommitments;
+    const currentDsr = calculateDsr(baseCommitments);
+    const currentDsrInfo = getDsrCategory(currentDsr);
+
+    const results = homeLoansData.home_loans
+        .filter(loan => {
+            // Basic margin check
+            const maxMargin = parseFloat(loan.max_margin.replace('%', ''));
+            if (loanPercentage > maxMargin) return false;
+
+            // Bank name filter
+            if (options?.bankName &&
+                !containsText(loan.bank_name, options.bankName)) {
+                return false;
+            }
+
+            // Flexi loan filter
+            if (options?.flexiLoan !== undefined) {
+                const isFlexiLoan = loan.full_flexi_loan.toLowerCase() === 'yes';
+                if (options.flexiLoan !== isFlexiLoan) return false;
+            }
+
+            // Finance type filter
+            if (options?.financeType) {
+                const islamicTerms = ['-i', 'islamic', 'murabahah', 'takaful'];
+                const isIslamic = islamicTerms.some(term =>
+                    loan.bank_name.toLowerCase().indexOf(term.toLowerCase()) !== -1
+                );
+                if ((options.financeType === 'islamic') !== isIslamic) return false;
+            }
+
+            // Lock in period filter
+            if (options?.requiresLockInPeriod !== undefined) {
+                const hasLockIn = parseFloat(loan.lock_in_period.split(' ')[0]) > 0;
+                if (options.requiresLockInPeriod !== hasLockIn) return false;
+            }
+
+            // Tenure filter
+            if (options?.maxTenureYears) {
+                const loanMaxTenure = parseInt(loan.max_tenure.split(' ')[0]);
+                if (options.maxTenureYears > loanMaxTenure) return false;
+            }
+
+            return true;
+        })
+    homeLoansData.home_loans.map(loan => {
+        // Calculate monthly payment
+        const adjustmentFactor = requiredLoan / 500000;
+        const monthlyPayment = parseFloat(
+            loan.monthly_payment.replace('RM ', '').replace(',', '')
+        ) * adjustmentFactor;
+
+        // Calculate DSR with this loan
+        const totalMonthlyCommitments = baseCommitments + monthlyPayment;
+        const newDsr = calculateDsr(totalMonthlyCommitments);
+        const newDsrInfo = getDsrCategory(newDsr);
+
+        // Parse interest rate
+        const rate = loan.profit_rate.replace('%', '').trim();
+        const rateValues = rate.indexOf('-') !== -1
+            ? rate.split('-').map(r => parseFloat(r))
+            : [parseFloat(rate), parseFloat(rate)];
+
+        return {
+            bankName: loan.bank_name,
+            monthlyPayment: monthlyPayment.toFixed(2),
+            interestRate: loan.profit_rate,
+            maxTenure: loan.max_tenure,
+            maxMargin: loan.max_margin,
+            lockInPeriod: loan.lock_in_period,
+            isFlexiLoan: loan.full_flexi_loan === "Yes",
+            remarks: loan.remarks,
+            currentDsr: {
+                value: currentDsr.toFixed(1),
+                category: currentDsrInfo.category,
+                description: currentDsrInfo.info.description
+            },
+            projectedDsr: {
+                value: newDsr.toFixed(1),
+                category: newDsrInfo.category,
+                description: newDsrInfo.info.description
+            },
+            affordabilityStatus: newDsr <= dsrCategories.MODERATE.max
+                ? "Affordable"
+                : "May be difficult to afford"
+        };
+    })
+        .sort((a, b) =>
+            parseFloat(a.interestRate) - parseFloat(b.interestRate)
+        );
+
+    return {
+        summary: {
+            propertyValue: `RM ${propertyValue.toLocaleString()}`,
+            requiredLoan: `RM ${requiredLoan.toLocaleString()}`,
+            loanPercentage: `${loanPercentage}%`,
+            currentDsr: `${currentDsr.toFixed(1)}%`,
+            currentDsrCategory: currentDsrInfo.category,
+            totalLoansAnalyzed: results.length
+        },
+        loans: results
+    };
+};
+
+
+const analysis = analyzeMortgage(
+    500000,    // Property value
+    80,        // Loan percentage
+    5000,      // Monthly income
+    1000,      // Existing loan payments
+    500,       // Other commitments
+    {
+        flexiLoan: true,
+        financeType: 'conventional',
+        bankName: "Maybank"
+    }
+);
+
+console.log(analysis);

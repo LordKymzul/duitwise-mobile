@@ -1,13 +1,14 @@
 import { View, Text, useColorScheme, ActivityIndicator } from "react-native";
 import { SliderForm } from "../../../../../core/shared/presentation/components/slider-form";
 import { Sizes } from "../../../../../core/constant/Sizes";
-import { COLORS } from "../../../../../core/constant/Colors";
+import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import DefaultButton from "src/core/shared/presentation/components/default-button";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import BankLoanCard from "../components/bank-loan-card";
 import { BankLoanDetailProps } from "../components/bank-loan-card";
 import { filterPersonalLoans, PersonalFilteredLoan, personalLoanData } from "../../zustand/personal-loan-store";
 import Toast from "react-native-toast-message";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 const LoanPersonalScreen = () => {
 
@@ -20,6 +21,28 @@ const LoanPersonalScreen = () => {
     const [filteredLoans, setFilteredLoans] = useState<PersonalFilteredLoan[]>([]);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
+
+    const handlePresentModalPress = useCallback(() => {
+        console.log("present modal");
+        bottomSheetRef.current?.present();
+    }, []);
+
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior={"close"}
+            />
+        ),
+        []
+    );
+
 
     const handleCalculation = async () => {
 
@@ -70,51 +93,45 @@ const LoanPersonalScreen = () => {
     }
 
     return (
-        <View style={{
-            width: "100%",
-            paddingHorizontal: Sizes.padding.lg,
-            marginTop: Sizes.spacing.lg,
-            gap: Sizes.spacing.xl
-        }}>
+        <>
+            <View style={{
+                width: "100%",
+                paddingHorizontal: Sizes.padding.lg,
+                marginTop: Sizes.spacing.lg,
+                gap: Sizes.spacing.xl
+            }}>
 
-            <SliderForm
-                title="Loan Amount"
-                value={financingAmount}
-                minimumValue={1000}
-                maximumValue={10000}
-                onChange={(value) => setFinancingAmount(value)}
-                color={colors.tint}
-                unit="RM"
-            />
+                <SliderForm
+                    title="Loan Amount"
+                    value={financingAmount}
+                    minimumValue={1000}
+                    maximumValue={10000}
+                    onChange={(value) => setFinancingAmount(value)}
+                    color={Colors.linearPersonalLoan[0]}
+                    unit="RM"
+                />
 
-            <SliderForm
-                title="Financing Period"
-                value={financingPeriod}
-                minimumValue={2}
-                maximumValue={36}
-                onChange={(value) => setFinancingPeriod(value)}
-                color={colors.tint}
-                unit="Months"
-            />
+                <SliderForm
+                    title="Financing Period"
+                    value={financingPeriod}
+                    minimumValue={2}
+                    maximumValue={36}
+                    onChange={(value) => setFinancingPeriod(value)}
+                    color={Colors.linearPersonalLoan[0]}
+                    unit="Months"
+                />
 
-            {
-                isLoading ? (
-                    <ActivityIndicator
-                        size="large"
-                        color={colors.tint}
-                        style={{ marginTop: Sizes.spacing.lg, alignSelf: "center", width: "100%" }}
-                    />
-                ) : (
-                    <View style={{
-                        width: "100%",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}>
-
+                {
+                    isLoading ? (
+                        <ActivityIndicator
+                            size="large"
+                            color={colors.tint}
+                            style={{ marginTop: Sizes.spacing.lg, alignSelf: "center", width: "100%" }}
+                        />
+                    ) : (
                         <View style={{
                             width: "100%",
-                            marginBottom: Sizes.spacing.md
+                            marginTop: Sizes.spacing.lg
                         }}>
                             <DefaultButton
                                 title="Check Availability"
@@ -125,53 +142,66 @@ const LoanPersonalScreen = () => {
 
                             />
                         </View>
+                    )
+                }
 
+
+
+                {
+                    filteredLoans.length > 0 && filteredLoans.map((loan, index) => {
+                        const details: BankLoanDetailProps[] = [
+                            { title: "Interest Rate", value: loan.interest_rate },
+                            { title: "Estimated Monthly Payment", value: loan.estimated_monthly_min.toString() },
+                            { title: "Minimum Monthly Income", value: loan.minimum_monthly_income },
+                            { title: "Government/GLC Eligible", value: loan.government_glc_eligible },
+                        ]
+                        return <BankLoanCard
+                            key={index}
+                            bankName={loan.bank_name}
+                            loanType="Personal Loan"
+                            details={details}
+                            onStressTestPress={() => {
+                                handlePresentModalPress();
+                            }}
+                            onApplyPress={() => { }}
+                        />
+                    })
+                }
+
+
+                {
+                    filteredLoans.length === 0 && (
                         <View style={{
                             width: "100%",
-                            marginTop: Sizes.spacing.md
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginVertical: Sizes.spacing.lg
                         }}>
-                            <DefaultButton
-                                title="Check Financial Stress"
-                                onPress={() => { }}
-                                color={colors.tint}
-                                borderRadius={100}
-                                isPrimary={false}
-                            />
+                            <Text>No matching loans found</Text>
                         </View>
-                    </View>)
-            }
+                    )
+                }
+
+            </View>
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={1}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+            >
+                <BottomSheetView>
+                    <Text>Hello</Text>
 
 
+                </BottomSheetView>
+            </BottomSheetModal>
 
-            {
-                filteredLoans.length > 0 && filteredLoans.map((loan, index) => {
-                    const details: BankLoanDetailProps[] = [
-                        { title: "Interest Rate", value: loan.interest_rate },
-                        { title: "Estimated Monthly Payment", value: loan.estimated_monthly_min.toString() },
-                        { title: "Minimum Monthly Income", value: loan.minimum_monthly_income },
-                        { title: "Government/GLC Eligible", value: loan.government_glc_eligible },
-                    ]
-                    return <BankLoanCard key={index} bankName={loan.bank_name} loanType="Personal Loan" details={details} />
-                })
-            }
-
-
-            {
-                filteredLoans.length === 0 && (
-                    <View style={{
-                        width: "100%",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginVertical: Sizes.spacing.lg
-                    }}>
-                        <Text>No matching loans found</Text>
-                    </View>
-                )
-            }
-
-        </View>
+        </>
     )
 }
+
+
+
 
 export default LoanPersonalScreen;   

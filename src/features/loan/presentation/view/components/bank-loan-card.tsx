@@ -4,6 +4,7 @@ import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Te
 import BankLoanDetailTile from "./bank-loan-detail-tile";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { COLORS } from "../../../../../core/constant/Colors";
+import DefaultButton from "src/core/shared/presentation/components/default-button";
 
 
 
@@ -17,14 +18,15 @@ export interface BankLoanCardProps {
     bankName: string;
     loanType: string;
     details: BankLoanDetailProps[];
+    onStressTestPress: () => void;
+    onApplyPress: () => void;
 }
 
-const BankLoanCard = ({ bankName, loanType, details }: BankLoanCardProps) => {
+const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyPress }: BankLoanCardProps) => {
 
     const colorScheme = useColorScheme();
     const colors = COLORS[colorScheme ?? "dark"];
 
-    console.log('Details: ', details);
 
 
     return (
@@ -91,23 +93,39 @@ const BankLoanCard = ({ bankName, loanType, details }: BankLoanCardProps) => {
 
             </View>
 
-            <TouchableOpacity style={{
+            <View style={{
                 width: "100%",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                gap: Sizes.spacing.lg,
                 marginTop: Sizes.spacing.lg,
-                borderColor: colors.secondaryContainer,
-                borderWidth: 1,
-                padding: Sizes.padding.md,
-                borderRadius: Sizes.borderRadius.md
             }}>
-                <Text style={[getSubtitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                    View All
-                </Text>
 
-                <Ionicons name="chevron-forward-outline" color={colors.onBackground} size={Sizes.iconSize.sm} />
-            </TouchableOpacity>
+                <View style={{
+                    flex: 1
+                }}>
+                    <DefaultButton
+                        title="Stress Test"
+                        onPress={onStressTestPress}
+                        color={colors.tint}
+                        isPrimary={false}
+                    />
+                </View>
+
+                <View style={{
+                    flex: 1
+                }}>
+                    <DefaultButton
+                        title="Apply"
+                        onPress={onApplyPress}
+                        color={colors.tint}
+                        isPrimary={true}
+                    />
+                </View>
+
+            </View>
+
         </View>
     )
 }

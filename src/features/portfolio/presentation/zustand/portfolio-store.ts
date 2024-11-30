@@ -1,20 +1,45 @@
 
 import { create } from "zustand";
-import { portfolioData, BankPortfolio } from "src/core/constant/Data";
-
+import { getAllPortfolioDataRepo, getSinglePortfolioRepo } from "../../infrasturctures/repositories/portfolio-repo";
+import { BankPortfolio, portfolioData } from "src/core/constant/Data";
 type PortfolioStore = {
-    portfolio: BankPortfolio[];
-    setPortfolio: (portfolio: BankPortfolio[]) => void;
+
     selectedPortfolio: BankPortfolio | null;
-    setSelectedPortfolio: (portfolio: BankPortfolio | null) => void;
+    setSelectedPortfolio: ({ bankName }: { bankName: string | null }) => Promise<void>;
+    portfolios: BankPortfolio[] | null;
+    setPortfolios: () => Promise<void>;
 }
 
 
 export const usePortfolioStore = create<PortfolioStore>((set) => ({
-    portfolio: portfolioData.portfolio,
-    setPortfolio: (portfolio) => set({ portfolio }),
+
     selectedPortfolio: null,
-    setSelectedPortfolio: (portfolio) => {
-        set({ selectedPortfolio: portfolio })
+    setSelectedPortfolio: async ({ bankName }: { bankName: string | null }) => {
+        try {
+            // if (bankName) {
+            //     const portfolio = await getSinglePortfolioRepo(bankName);
+            //     set({ selectedPortfolio: portfolio })
+            // } else {
+            //     set({ selectedPortfolio: null })
+            //     const portfolios = await getAllPortfolioDataRepo();
+            //     set({ portfolios });
+            // }
+            if (bankName) {
+                set({ selectedPortfolio: portfolioData.portfolio.find((portfolio) => portfolio.bankName === bankName) })
+            } else {
+                set({ selectedPortfolio: null })
+            }
+        } catch (error) {
+            throw error;
+        }
+    },
+    portfolios: null,
+    setPortfolios: async () => {
+        try {
+            const portfolios = portfolioData.portfolio;
+            set({ portfolios });
+        } catch (error) {
+            throw error;
+        }
     }
 }))

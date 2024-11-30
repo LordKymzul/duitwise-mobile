@@ -21,6 +21,7 @@ import DefaultButton from "src/core/shared/presentation/components/default-butto
 import { PATHS } from "src/core/constant/Paths";
 import { usePortfolioStore } from "src/features/portfolio/presentation/zustand/portfolio-store";
 import { BankPortfolio, portfolioData } from "src/core/constant/Data";
+import { useEffect } from "react";
 
 
 
@@ -44,12 +45,15 @@ export function PortfolioDrawer() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    return (
-        // <GestureHandlerRootView style={{ flex: 1 }}>
-        //     <BottomSheetModalProvider>
+    // useEffect(() => {
+    //     const fetchPortfolios = async () => {
+    //         await usePortfolioStore.getState().setPortfolios();
+    //     };
+    //     fetchPortfolios();
+    // }, []);
 
-        //     </BottomSheetModalProvider>
-        // </GestureHandlerRootView>
+    return (
+
         <Drawer.Navigator
             id={undefined}
             screenOptions={{
@@ -76,9 +80,6 @@ function DrawerContent(props: DrawerContentComponentProps) {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    const {
-        setSelectedPortfolio
-    } = usePortfolioStore();
 
 
     return (
@@ -133,18 +134,18 @@ function DrawerContent(props: DrawerContentComponentProps) {
                 </View>
 
 
-
-                {portfolioData.portfolio.map((item, index) => {
-
-                    return (
-                        <DrawerLayout
-                            key={index}
-                            bankPortfolio={item}
-                            index={index}
-                            navigation={props.navigation}
-                        />
-                    )
-                })}
+                {
+                    portfolioData.portfolio.map((item, index) => {
+                        return (
+                            <DrawerLayout
+                                key={index}
+                                bankPortfolio={item}
+                                index={index}
+                                navigation={props.navigation}
+                            />
+                        )
+                    })
+                }
 
             </DrawerContentScrollView>
 
@@ -156,7 +157,9 @@ function DrawerContent(props: DrawerContentComponentProps) {
                 <DefaultButton
                     title="See all Portfolios"
                     onPress={() => {
-                        setSelectedPortfolio(null);
+                        usePortfolioStore.getState().setSelectedPortfolio({
+                            bankName: null
+                        });
                         props.navigation.closeDrawer()
                     }}
                     color={isDark ? Colors.dark.tint : Colors.light.tint}
@@ -253,9 +256,9 @@ function DrawerLayout({ bankPortfolio, index, navigation }: DrawerListProps & { 
             }}
             onPress={() => {
                 if (bankPortfolio.bankName == "All Portfolios") {
-                    setSelectedPortfolio(null);
+                    setSelectedPortfolio({ bankName: null });
                 } else {
-                    setSelectedPortfolio(bankPortfolio);
+                    setSelectedPortfolio({ bankName: bankPortfolio.bankName });
                 }
                 navigation.closeDrawer();
             }}

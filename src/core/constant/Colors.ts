@@ -37,7 +37,16 @@ export const Colors = {
     purpleTransparent: "#ecd5ff",
     greenTransparent: "#b5fdc0",
 
+    linearPersonalLoan: ["#9461F1", "#7D3EEE"],
+    carLoan: ["#5585F0", "#1157D0"],
+    houseLoan: ["#11B57E", "#079A6D"],
+
+
+
+
 };
+
+
 
 
 enum COLOR_SCHEME {

@@ -228,6 +228,11 @@ const PortfolioLoanDetailScreen = () => {
                             {params.loan.loanDetails.loanHistory.map((loanHistory, index) => (
                                 <PaymentHistory key={index} color={color} loanHistory={loanHistory} />
                             ))}
+                            {/* {
+                                params.loan.loanDetails.map((loanHistory, index) => (
+                                    <PaymentHistory key={index} color={color} loanHistory={loanHistory} />
+                                ))
+                            } */}
 
 
                         </View>

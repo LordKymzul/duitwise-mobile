@@ -12,18 +12,20 @@ import FinancialFitness from '@core/shared/presentation/components/financial-fit
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from 'src/core/shared/types/navigation';
 import { COLORS } from 'src/core/constant/Colors';
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { Sizes } from 'src/core/constant/Sizes';
 import { chartData } from '../../utils/helper';
-import Animated, { 
-    useAnimatedScrollHandler, 
-    useAnimatedStyle, 
-    useSharedValue, 
+import Animated, {
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
     interpolateColor,
     withTiming
 } from 'react-native-reanimated';
 import ModalChooseBank from '@features/portfolio/presentation/view/components/modal-choose-bank';
+import { usePortfolioStore } from 'src/features/portfolio/presentation/zustand/portfolio-store';
 import { BankPortfolio } from 'src/core/constant/Data';
+
 
 type RecurringPayment = {
     name: string;
@@ -43,7 +45,7 @@ const HomeScreen = () => {
 
     const scrollY = useSharedValue(0);
     const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-    
+
     const scrollHandler = useAnimatedScrollHandler({
         onScroll: (event) => {
             scrollY.value = event.contentOffset.y;
@@ -80,6 +82,16 @@ const HomeScreen = () => {
         setIsBankModalVisible(false);
         navigation.navigate('LoginPortfolio', { bank });
     };
+
+    const { setPortfolios } = usePortfolioStore();
+
+
+    useEffect(() => {
+        const fetchPortfolios = async () => {
+            await usePortfolioStore.getState().setPortfolios();
+        };
+        fetchPortfolios();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -140,7 +152,7 @@ const HomeScreen = () => {
             <ModalChooseBank
                 visible={isBankModalVisible}
                 onClose={() => setIsBankModalVisible(false)}
-               
+
             />
         </View>
     );

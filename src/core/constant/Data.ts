@@ -1,11 +1,88 @@
-import { PortfolioEntity } from "src/features/portfolio/entities/portfolio-entity"
-import { PATHS } from "./Paths"
+import { PATHS } from "./Paths";
 
+// Interfaces
+export interface PortfolioData {
+    portfolio: BankPortfolio[];
+    recurringPayments: RecurringPayments;
+    transactionDetails: TransactionDetailsEntity;
+}
 
+export interface BankPortfolio {
+    bankName: string;
+    totalBalance: number;
+    imageURL: string;
+    loans: Loan[];
+    assets: Asset[]
+}
 
+export interface Loan {
+    type: string;
+    nextPaymentDate: Date;
+    totalLoan: number;
+    monthlyPayment: number;
+    details: LoanDetails;
+    status: LoanStatus;
+    loanDetails: ExtendedLoanDetails;
+}
 
+export interface LoanDetails {
+    principalAndInterest: number;
+    insurancePremium: number;
+    maintenanceReserve: number;
+}
+
+export interface LoanStatus {
+    activeStatus: string;
+    paymentStatus: boolean;
+}
+
+export interface ExtendedLoanDetails {
+    loanName: string;
+    duration: string;
+    loanReleaseDate: Date;
+    maturityDate: Date;
+    balance: number;
+    interestRate: string;
+    percentage: number;
+    loanHistory: LoanHistoryEntry[];
+}
+
+export interface LoanHistoryEntry {
+    date: Date;
+    urlBankImage: string;
+    paidAmount: number;
+}
+
+export interface RecurringPayments {
+    Netflix: number;
+    Spotify: number;
+    YouTube: number;
+    Apple: number;
+}
+
+export interface Asset {
+    id: string;
+    type: string;
+    balance: number;
+}
+
+// export interface Transaction {
+//     transactionName: string;
+//     value: number;
+//     stressLevel: string;
+//     date: Date;
+//     imageURL: string;
+//     bankName: string;
+// }
+
+// export interface TransactionDetails {
+//     totalBalance: number;
+//     percentageBalance: number;
+//     financialFitness: string;
+//     transactions: Transaction[];
+// }
 export interface TransactionDetailsEntity {
-    totalBalance: string,
+    totalBalance: number,
     percentageBalance: number,
     financialFitness: string,
     transactions: TransactionItemEntity[]
@@ -20,37 +97,12 @@ export type TransactionItemEntity = {
     bankName: string
 }
 
-export const PortfoliosData: PortfolioEntity[] = [
-
-    {
-        name: "Maybank",
-        amount: 1000,
-        imageURL: PATHS.maybankLogo,
-    },
-    {
-        name: "Bank Islam",
-        amount: 1000,
-        imageURL: PATHS.bankIslamLogo,
-    },
-    {
-        name: "CIMB",
-        amount: 1000,
-        imageURL: PATHS.cimbLogo,
-    },
-    {
-        name: "GXBank",
-        amount: 1000,
-        imageURL: PATHS.gxBankLogo,
-    },
-
-]
-
 
 export const TransactionDetailsData: TransactionDetailsEntity = {
-    "totalBalance": "8970.70",
-    "percentageBalance": -8.19,
-    "financialFitness": "High",
-    "transactions": [
+    totalBalance: 8545.30,
+    percentageBalance: -8.19,
+    financialFitness: "High",
+    transactions: [
         {
             "transactionName": "Grab Food Payment",
             "value": 65.00,
@@ -110,149 +162,6 @@ export const TransactionDetailsData: TransactionDetailsEntity = {
     ]
 }
 
-// Sample data
-export const carLoansData = {
-    car_loans: [
-        {
-            "bank_name": "Affin Bank Conventional Hire Purchase",
-            "interest_rate": "2.92% - 3% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Maybank Hire Purchase",
-            "interest_rate": "3.40% - 4.25% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "CIMB Hire Purchase-i",
-            "interest_rate": "2.85% - 4.45% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Public Bank Aitab Hire Purchase-i",
-            "interest_rate": "3.31% - 4.10% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "7 - 9 years"
-        },
-        {
-            "bank_name": "Hong Leong Auto Loan",
-            "interest_rate": "3.24% - 3.78% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "7 - 9 years"
-        },
-        {
-            "bank_name": "RHB Hire Purchase",
-            "interest_rate": "3.18% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Al-Rajhi Automobile Financing-i",
-            "interest_rate": "4.40% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "AmBank Islamic Arif Hire Purchase-i",
-            "interest_rate": "3.05% - 3.66% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "BSN Hire Purchase",
-            "interest_rate": "2.55% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Bank Islam Vehicle Financing-i",
-            "interest_rate": "3% - 3.60% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Bank Muamalat Vehicle Financing-i GradPack",
-            "interest_rate": "3.10% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        },
-        {
-            "bank_name": "Bank Rakyat Vehicle Financing-i (An Naqlu 2)",
-            "interest_rate": "3.30% - 3.50% p.a.",
-            "car_condition": "New / Used",
-            "tenure_period": "5 - 9 years"
-        },
-        {
-            "bank_name": "KFH Automobile Ijarah-i",
-            "interest_rate": "2.50% p.a.",
-            "car_condition": "New",
-            "tenure_period": "9 years"
-        }
-    ]
-};
-
-
-// Interfaces
-export interface PortfolioData {
-    portfolio: BankPortfolio[];
-    recurringPayments: RecurringPayments;
-}
-
-export interface BankPortfolio {
-    bankName: string;
-    totalBalance: number;
-    imageURL: string;
-    loans: Loan[];
-}
-
-export interface Loan {
-    type: string;
-    nextPaymentDate: Date;
-    totalLoan: number;
-    monthlyPayment: number;
-    details: LoanDetails;
-    status: LoanStatus;
-    loanDetails: ExtendedLoanDetails;
-}
-
-export interface LoanDetails {
-    principalAndInterest: number;
-    insurancePremium: number;
-    maintenanceReserve: number;
-}
-
-export interface LoanStatus {
-    activeStatus: string;
-    paymentStatus: boolean;
-}
-
-export interface ExtendedLoanDetails {
-    loanName: string;
-    duration: string;
-    loanReleaseDate: Date;
-    maturityDate: Date;
-    balance: number;
-    interestRate: string;
-    percentage: number;
-    loanHistory: LoanHistoryEntry[];
-}
-
-export interface LoanHistoryEntry {
-    date: Date;
-    urlBankImage: string;
-    paidAmount: number;
-}
-
-export interface RecurringPayments {
-    Netflix: number;
-    Spotify: number;
-    YouTube: number;
-    Apple: number;
-}
-
 // Data
 export const portfolioData: PortfolioData = {
     portfolio: [
@@ -262,10 +171,10 @@ export const portfolioData: PortfolioData = {
             imageURL: PATHS.maybankLogo,
             loans: [
                 {
-                    type: "House Loan",
+                    type: "House Loan 🏡",
                     nextPaymentDate: new Date("2024-12-15"),
                     totalLoan: 650910,
-                    monthlyPayment: 2800,
+                    monthlyPayment: 400,
                     details: {
                         principalAndInterest: 2200,
                         insurancePremium: 300,
@@ -298,10 +207,10 @@ export const portfolioData: PortfolioData = {
                     }
                 },
                 {
-                    type: "Car Loan",
+                    type: "Car Loan 🚗",
                     nextPaymentDate: new Date("2024-12-20"),
                     totalLoan: 95000,
-                    monthlyPayment: 1500,
+                    monthlyPayment: 500,
                     details: {
                         principalAndInterest: 1300,
                         insurancePremium: 100,
@@ -333,7 +242,27 @@ export const portfolioData: PortfolioData = {
                         ]
                     }
                 }
-            ]
+            ],
+            assets: [{
+                id: "5435123456789001",
+                type: "Tabung Haji",
+                balance: 5000
+            },
+            {
+                id: "5345234567891002",
+                type: "ASNB Account",
+                balance: 4000
+            },
+            {
+                id: "2344234567891003",
+                type: "Gold Investment Account",
+                balance: 8000
+            },
+            {
+                id: "6354234567891004",
+                type: "Unit Trust",
+                balance: 3000
+            }]
         },
         {
             bankName: "CIMB",
@@ -341,10 +270,10 @@ export const portfolioData: PortfolioData = {
             imageURL: PATHS.cimbLogo,
             loans: [
                 {
-                    type: "Car Loan",
+                    type: "Car Loan 🚗",
                     nextPaymentDate: new Date("2024-12-25"),
                     totalLoan: 75000,
-                    monthlyPayment: 1200,
+                    monthlyPayment: 500,
                     details: {
                         principalAndInterest: 1000,
                         insurancePremium: 100,
@@ -376,19 +305,43 @@ export const portfolioData: PortfolioData = {
                         ]
                     }
                 }
+            ],
+            assets: [
+                {
+                    id: "5435123456789001",
+                    type: "Tabung Haji",
+                    balance: 5000
+                },
+                {
+                    id: "5345234567891002",
+                    type: "ASNB Account",
+                    balance: 4000
+                },
+                {
+                    id: "2344234567891003",
+                    type: "Gold Investment Account",
+                    balance: 8000
+                },
+                {
+                    id: "6354234567891004",
+                    type: "Unit Trust",
+                    balance: 3000
+                }
             ]
         },
         {
             bankName: "Bank Islam",
             totalBalance: 75000,
             imageURL: PATHS.bankIslamLogo,
-            loans: []
+            loans: [],
+            assets: []
         },
         {
             bankName: "GXBank",
             totalBalance: 45000,
             imageURL: PATHS.gxBankLogo,
-            loans: []
+            loans: [],
+            assets: []
         }
     ],
     recurringPayments: {
@@ -396,5 +349,266 @@ export const portfolioData: PortfolioData = {
         Spotify: 23.90,
         YouTube: 17.90,
         Apple: 39.90
+    },
+
+    transactionDetails: {
+        totalBalance: 8545.30,
+        percentageBalance: -8.19,
+        financialFitness: "High",
+        transactions: [
+            {
+                transactionName: "Grab Food Payment",
+                value: 65.00,
+                stressLevel: "Income",
+                date: new Date("2024-11-05"),
+                imageURL: "https://seeklogo.com/images/G/grab-logo-7020E74857-seeklogo.com.png",
+                bankName: "Maybank"
+            },
+            {
+                transactionName: "Mixue",
+                value: -25.00,
+                stressLevel: "Low Stress",
+                date: new Date("2024-11-12"),
+                imageURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtFCjKjcs1WA5ukidMQlJmxU4ugsOjHKiT7g&s",
+                bankName: "CIMB"
+            },
+            {
+                transactionName: "Petronas",
+                value: -120.00,
+                stressLevel: "High Stress",
+                date: new Date("2024-11-15"),
+                imageURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzaHb9QDf4D5YZhZPGPa7IIPqKeg0dtunF7Q&s",
+                bankName: "Bank Islam"
+            },
+            {
+                transactionName: "Grab Food Payment",
+                value: 55.00,
+                stressLevel: "Income",
+                date: new Date("2024-11-10"),
+                imageURL: "https://seeklogo.com/images/G/grab-logo-7020E74857-seeklogo.com.png",
+                bankName: "CIMB"
+            },
+            {
+                transactionName: "Spotify",
+                value: -15.00,
+                stressLevel: "Low Stress",
+                date: new Date("2024-11-18"),
+                imageURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Spotify_App_Logo.svg/1200px-Spotify_App_Logo.svg.png",
+                bankName: "Maybank"
+            },
+            {
+                transactionName: "Grab Food Payment",
+                value: 80.00,
+                stressLevel: "Income",
+                date: new Date("2024-11-22"),
+                imageURL: "https://seeklogo.com/images/G/grab-logo-7020E74857-seeklogo.com.png",
+                bankName: "Bank Islam"
+            },
+            {
+                transactionName: "Netflix",
+                value: -40.00,
+                stressLevel: "Medium Stress",
+                date: new Date("2024-11-20"),
+                imageURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRve9x5ZnT0PqbX85-VVQfFVYJ-aHTJU_aBAQ&s",
+                bankName: "CIMB"
+            },
+            {
+                transactionName: "Shopee Purchase",
+                value: -156.90,
+                stressLevel: "Medium Stress",
+                date: new Date("2024-11-25"),
+                imageURL: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freelogovectors.net%2Fshopee-logo-02%2F&psig=AOvVaw0hKw5OkmsLVaejF7QrIqlr&ust=1733025029940000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOjIrr2Tg4oDFQAAAAAdAAAAABAE",
+                bankName: "CIMB"
+            },
+            {
+                transactionName: "Lazada Shopping",
+                value: -234.50,
+                stressLevel: "Medium Stress",
+                date: new Date("2024-11-24"),
+                imageURL: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fscvglobal.com.my%2Fblogs%2Fnews%2Flazada-fastest-growth-award-on-2017&psig=AOvVaw1Psh8sXo7gTgVLupyfZrU6&ust=1733025074930000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPjY2tGTg4oDFQAAAAAdAAAAABAS",
+                bankName: "GXBank"
+            },
+            {
+                transactionName: "Nasi Lemak Burung Hantu",
+                value: -98.40,
+                stressLevel: "Low Stress",
+                date: new Date("2024-11-23"),
+                imageURL: "https://www.google.com/url?sa=i&url=https%3A%2F%2Ffoodie.asia%2Flisting%2Fnasi-lemak-burung-hantu&psig=AOvVaw0GizZT8Aid58A8dsWePJ6S&ust=1733025203815000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDXspCUg4oDFQAAAAAdAAAAABAE",
+                bankName: "CIMB"
+            },
+            {
+                transactionName: "Online Course Payment",
+                value: -299.00,
+                stressLevel: "Medium Stress",
+                date: new Date("2024-11-22"),
+                imageURL: "https://play.google.com/store/apps/details/Udemy_Online_Courses?id=com.udemy.android&hl=en_NZ",
+                bankName: "Maybank"
+            },
+            {
+                transactionName: "Aeon Supermarket",
+                value: -245.30,
+                stressLevel: "Medium Stress",
+                date: new Date("2024-11-21"),
+                imageURL: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.facebook.com%2Faeonretail.my%2F&psig=AOvVaw2-RvCzjJrUc8Z3Bd17YpDq&ust=1733025261465000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjc4qqUg4oDFQAAAAAdAAAAABAE",
+                bankName: "GXBank"
+            },
+            {
+                transactionName: "Payment",
+                value: 2000.00,
+                stressLevel: "Income",
+                date: new Date("2024-11-20"),
+                imageURL: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vectorstock.com%2Froyalty-free-vector%2Fsimple-money-transfer-logo-concept-design-icon-vector-27358697&psig=AOvVaw0cg4cCe2N6jQfwizomLydf&ust=1733025325195000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPjjj8qUg4oDFQAAAAAdAAAAABAE",
+                bankName: "Bank Islam"
+            },
+            {
+                transactionName: "Te",
+                value: -89.90,
+                stressLevel: "Low Stress",
+                date: new Date("2024-11-19"),
+                imageURL: "https://www.google.com/imgres?q=umobile&imgurl=https%3A%2F%2Fwww.u.com.my%2Fcontent%2Fdam%2Fu-mobile%2Fpersonal%2Fmeta-images-en%2Fdefault-metaimage-umobile-logo.png&imgrefurl=https%3A%2F%2Fwww.u.com.my%2Fen%2Fpersonal%2Fhome&docid=Wn91wNpZZ3iTnM&tbnid=JiAHnq36oLEt9M&vet=12ahUKEwitlcrclIOKAxWFe_UHHd8cIacQM3oECBcQAA..i&w=1200&h=630&hcb=2&ved=2ahUKEwitlcrclIOKAxWFe_UHHd8cIacQM3oECBcQAA",
+                bankName: "CIMB"
+            },
+        ]
     }
 };
+
+
+export const portfolioCharts = [
+    {
+        "bankName": "Maybank",
+        "bankBalances": [
+            {
+                "xValue": new Date("2024-11-05"),
+                "yValue": 65.00
+            },
+            {
+                "xValue": new Date("2024-11-08"),
+                "yValue": 72.50
+            },
+            {
+                "xValue": new Date("2024-11-12"),
+                "yValue": 58.75
+            },
+            {
+                "xValue": new Date("2024-11-15"),
+                "yValue": 67.25
+            },
+            {
+                "xValue": new Date("2024-11-18"),
+                "yValue": 63.40
+            },
+            {
+                "xValue": new Date("2024-11-21"),
+                "yValue": 69.80
+            }
+        ]
+    },
+    {
+        "bankName": "CIMB",
+        "bankBalances": [
+            {
+                "xValue": new Date("2024-11-05"),
+                "yValue": 65.00
+            },
+            {
+                "xValue": new Date("2024-11-08"),
+                "yValue": 63.20
+            },
+            {
+                "xValue": new Date("2024-11-12"),
+                "yValue": 68.90
+            },
+            {
+                "xValue": new Date("2024-11-15"),
+                "yValue": 71.30
+            },
+            {
+                "xValue": new Date("2024-11-18"),
+                "yValue": 70.15
+            },
+            {
+                "xValue": new Date("2024-11-21"),
+                "yValue": 73.45
+            }
+        ]
+    },
+    {
+        "bankName": "GXBank",
+        "bankBalances": [
+            {
+                "xValue": new Date("2024-11-05"),
+                "yValue": 58.20
+            },
+            {
+                "xValue": new Date("2024-11-08"),
+                "yValue": 61.40
+            },
+            {
+                "xValue": new Date("2024-11-12"),
+                "yValue": 59.85
+            },
+            {
+                "xValue": new Date("2024-11-15"),
+                "yValue": 63.70
+            },
+            {
+                "xValue": new Date("2024-11-18"),
+                "yValue": 62.90
+            },
+            {
+                "xValue": new Date("2024-11-21"),
+                "yValue": 65.30
+            }
+        ]
+    },
+    {
+        "bankName": "Bank Islam",
+        "bankBalances": [
+            {
+                "xValue": new Date("2024-11-05"),
+                "yValue": 61.50
+            },
+            {
+                "xValue": new Date("2024-11-08"),
+                "yValue": 63.80
+            },
+            {
+                "xValue": new Date("2024-11-12"),
+                "yValue": 62.95
+            },
+            {
+                "xValue": new Date("2024-11-15"),
+                "yValue": 65.40
+            },
+            {
+                "xValue": new Date("2024-11-18"),
+                "yValue": 67.20
+            },
+            {
+                "xValue": new Date("2024-11-21"),
+                "yValue": 68.75
+            }
+        ]
+    }
+]
+
+export function calculateTotalMonthlyPayments(): number {
+    // Calculate loan payments
+    const totalLoanPayments = portfolioData.portfolio.reduce((total, bank) => {
+        const bankMonthlyPayments = bank.loans.reduce((bankTotal, loan) => {
+            return bankTotal + loan.monthlyPayment;
+        }, 0);
+        return total + bankMonthlyPayments;
+    }, 0);
+
+    // Calculate recurring payments
+    const totalRecurringPayments = Object.values(portfolioData.recurringPayments)
+        .reduce((total, payment) => total + payment, 0);
+
+    // Combine both totals
+    return totalLoanPayments + totalRecurringPayments;
+}
+
+// Example usage:
+const totalMonthlyPayments = calculateTotalMonthlyPayments();
+// Returns 5636.60 (Loans: 5500 + Recurring: 136.60)

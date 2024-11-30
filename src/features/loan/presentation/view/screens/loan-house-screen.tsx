@@ -1,16 +1,22 @@
 import { View, Text, useColorScheme, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { SliderForm } from "../../../../../core/shared/presentation/components/slider-form";
-import { COLORS } from "../../../../../core/constant/Colors";
+import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import DefaultButton from "../../../../../core/shared/presentation/components/default-button";
 import ModalDropdown from "react-native-modal-dropdown";
 import DropdownModal from "src/core/shared/presentation/components/dropdown-modal";
-import { FilteredLoanInfo, filterHomeLoans } from "../../zustand/home-loan-store";
+import { analyzeMortgage, FilteredLoanInfo, filterHomeLoans } from "../../zustand/home-loan-store";
 import BankLoanCard, { BankLoanDetailProps } from "../components/bank-loan-card";
 import Toast from "react-native-toast-message";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { calculateTotalMonthlyPayments } from "src/core/constant/Data";
+import DefaultGauge from "src/core/shared/presentation/components/default-gauge";
+import { Image } from "react-native";
+import LoanStressSheet from "../components/loan-stress-sheet";
 
 
 const advanceOptions = [
@@ -47,6 +53,25 @@ const LoanHouseScreen = () => {
     const colorScheme = useColorScheme();
     const colors = COLORS[colorScheme ?? 'dark'];
 
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
+
+
+
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior={"close"}
+            />
+        ),
+        []
+    );
+
+
     const [advanceOption, setAdvanceOption] = useState<any[]>(advanceOptions);
 
     const [propertyValue, setPropertyValue] = useState<number>(0);
@@ -60,11 +85,12 @@ const LoanHouseScreen = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const [stressValue, setStressValue] = useState<number>(0);
+
 
     const [filteredLoans, setFilteredLoans] = useState<FilteredLoanInfo[]>([]);
 
     const handleRateType = (value: string) => {
-
         setRateType(value);
     }
 
@@ -122,6 +148,40 @@ const LoanHouseScreen = () => {
         }
     }
 
+    const handleStressTest = () => {
+
+        try {
+
+            const analysis = analyzeMortgage
+                (propertyValue,
+                    loanPercentage,
+                    3000,
+                    calculateTotalMonthlyPayments(),
+                    500,
+                    { flexiLoan: flexiLoan === "Yes", financeType: financeType as "islamic" | "conventional", bankName: bankAndLoanType });
+            const currentDsr = Number.parseFloat(analysis.summary.currentDsr.replace("%", ""));
+            setStressValue(currentDsr);
+            console.log('Stress Test' + currentDsr);
+        } catch (e) {
+            console.log('Error: ', e);
+            Toast.show({
+                text1: "Something went wrong due to " + e,
+                text2: e as any,
+                type: "error"
+            });
+        }
+    }
+
+    // const handlePresentModalPress = useCallback(() => {
+    //     bottomSheetRef.current?.present();
+    //     handleStressTest();
+    // }, []);
+
+    const handlePresentModalPress = () => {
+        bottomSheetRef.current?.present();
+        handleStressTest();
+    }
+
 
 
     const setShowPicker = (index: number) => {
@@ -131,146 +191,140 @@ const LoanHouseScreen = () => {
     }
 
     return (
-        <View style={{
-            flexDirection: "column",
-            width: "100%",
-            paddingHorizontal: Sizes.padding.lg,
-            marginTop: Sizes.spacing.lg,
-            gap: Sizes.spacing.md
-        }}>
-
+        <>
             <View style={{
                 flexDirection: "column",
-                gap: Sizes.spacing.lg
+                width: "100%",
+                paddingHorizontal: Sizes.padding.lg,
+                marginTop: Sizes.spacing.lg,
+                gap: Sizes.spacing.md
             }}>
-                <SliderForm
-                    title="Property Value"
-                    value={propertyValue}
-                    minimumValue={100000}
-                    maximumValue={500000}
-                    unit="RM"
-                    onChange={(value) => setPropertyValue(value)}
-                    color={colors.tint}
-                />
-
-                <SliderForm
-                    title="Loan Percentage"
-                    value={loanPercentage}
-                    minimumValue={50}
-                    maximumValue={100}
-                    unit="%"
-                    onChange={(value) => setLoanPercentage(value)}
-                    color={colors.tint}
-                />
-            </View>
-
-            <View style={{
-                flexDirection: "column",
-                gap: Sizes.spacing.lg,
-                marginTop: Sizes.spacing.lg
-            }}>
-
-                <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                    Advance Options
-                </Text>
 
                 <View style={{
-                    flexDirection: "row",
-                    gap: Sizes.spacing.md,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%"
+                    flexDirection: "column",
+                    gap: Sizes.spacing.lg
                 }}>
-
-                    <DropdownForm
-                        colors={colors}
-                        title={advanceOptions[0].name}
-                        showPicker={advanceOptions[0].isOpen}
-                        setShowPicker={() => setShowPicker(0)}
-                        selectedValue={rateType}
-                        options={advanceOptions[0].options}
-                        setSelectedValue={handleRateType}
-                        placeHolder={rateType ?? "Select Rate Type"}
-
+                    <SliderForm
+                        title="Property Value"
+                        value={propertyValue}
+                        minimumValue={100000}
+                        maximumValue={500000}
+                        unit="RM"
+                        onChange={(value) => setPropertyValue(value)}
+                        color={Colors.houseLoan[0]}
                     />
 
-                    <DropdownForm
-                        colors={colors}
-                        title={advanceOptions[1].name}
-                        showPicker={advanceOptions[1].isOpen}
-                        setShowPicker={() => setShowPicker(1)}
-                        selectedValue={flexiLoan}
-                        options={advanceOptions[1].options}
-                        setSelectedValue={handleFlexiLoan}
-                        placeHolder={flexiLoan ?? "Select Flexi Loan"}
+                    <SliderForm
+                        title="Loan Percentage"
+                        value={loanPercentage}
+                        minimumValue={50}
+                        maximumValue={100}
+                        unit="%"
+                        onChange={(value) => setLoanPercentage(value)}
+                        color={Colors.houseLoan[0]}
                     />
-
-
                 </View>
 
                 <View style={{
-                    flexDirection: "row",
-                    gap: Sizes.spacing.md,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%"
+                    flexDirection: "column",
+                    gap: Sizes.spacing.lg,
+                    marginTop: Sizes.spacing.lg
                 }}>
 
-                    <DropdownForm
-                        colors={colors}
-                        title={advanceOptions[2].name}
-                        showPicker={advanceOptions[2].isOpen}
-                        setShowPicker={() => setShowPicker(2)}
-                        selectedValue={financeType}
-                        options={advanceOptions[2].options}
-                        setSelectedValue={handleFinanceType}
-                        placeHolder={financeType ?? "Select Finance Type"}
-                    />
+                    <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
+                        Advance Options
+                    </Text>
 
-                    <DropdownForm
-                        colors={colors}
-                        title={advanceOptions[3].name}
-                        showPicker={advanceOptions[3].isOpen}
-                        setShowPicker={() => setShowPicker(3)}
-                        selectedValue={lockInPeriod}
-                        options={advanceOptions[3].options}
-                        setSelectedValue={handleLockInPeriod}
-                        placeHolder={lockInPeriod ?? "Select Lock In Period"}
-                    />
+                    <View style={{
+                        flexDirection: "row",
+                        gap: Sizes.spacing.md,
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%"
+                    }}>
 
+                        <DropdownForm
+                            colors={colors}
+                            title={advanceOptions[0].name}
+                            showPicker={advanceOptions[0].isOpen}
+                            setShowPicker={() => setShowPicker(0)}
+                            selectedValue={rateType}
+                            options={advanceOptions[0].options}
+                            setSelectedValue={handleRateType}
+                            placeHolder={rateType ?? "Select Rate Type"}
 
-
-                </View>
-
-                <DropdownForm
-                    colors={colors}
-                    title={advanceOptions[4].name}
-                    showPicker={advanceOptions[4].isOpen}
-                    setShowPicker={() => setShowPicker(4)}
-                    selectedValue={bankAndLoanType}
-                    options={advanceOptions[4].options}
-                    setSelectedValue={handleBankAndLoanType}
-                    placeHolder={bankAndLoanType ?? "Select Bank And Loan Type"}
-                />
-
-                {
-                    isLoading ? (
-                        <ActivityIndicator
-                            size="large"
-                            color={colors.tint}
-                            style={{ marginTop: Sizes.spacing.lg, alignSelf: "center", width: "100%" }}
                         />
-                    ) : (
-                        <View style={{
-                            width: "100%",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}>
 
+                        <DropdownForm
+                            colors={colors}
+                            title={advanceOptions[1].name}
+                            showPicker={advanceOptions[1].isOpen}
+                            setShowPicker={() => setShowPicker(1)}
+                            selectedValue={flexiLoan}
+                            options={advanceOptions[1].options}
+                            setSelectedValue={handleFlexiLoan}
+                            placeHolder={flexiLoan ?? "Select Flexi Loan"}
+                        />
+
+
+                    </View>
+
+                    <View style={{
+                        flexDirection: "row",
+                        gap: Sizes.spacing.md,
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%"
+                    }}>
+
+                        <DropdownForm
+                            colors={colors}
+                            title={advanceOptions[2].name}
+                            showPicker={advanceOptions[2].isOpen}
+                            setShowPicker={() => setShowPicker(2)}
+                            selectedValue={financeType}
+                            options={advanceOptions[2].options}
+                            setSelectedValue={handleFinanceType}
+                            placeHolder={financeType ?? "Select Finance Type"}
+                        />
+
+                        <DropdownForm
+                            colors={colors}
+                            title={advanceOptions[3].name}
+                            showPicker={advanceOptions[3].isOpen}
+                            setShowPicker={() => setShowPicker(3)}
+                            selectedValue={lockInPeriod}
+                            options={advanceOptions[3].options}
+                            setSelectedValue={handleLockInPeriod}
+                            placeHolder={lockInPeriod ?? "Select Lock In Period"}
+                        />
+
+
+
+                    </View>
+
+                    <DropdownForm
+                        colors={colors}
+                        title={advanceOptions[4].name}
+                        showPicker={advanceOptions[4].isOpen}
+                        setShowPicker={() => setShowPicker(4)}
+                        selectedValue={bankAndLoanType}
+                        options={advanceOptions[4].options}
+                        setSelectedValue={handleBankAndLoanType}
+                        placeHolder={bankAndLoanType ?? "Select Bank And Loan Type"}
+                    />
+
+                    {
+                        isLoading ? (
+                            <ActivityIndicator
+                                size="large"
+                                color={colors.tint}
+                                style={{ marginTop: Sizes.spacing.lg, alignSelf: "center", width: "100%" }}
+                            />
+                        ) : (
                             <View style={{
                                 width: "100%",
-                                marginBottom: Sizes.spacing.md
+                                marginTop: Sizes.spacing.lg
                             }}>
                                 <DefaultButton
                                     title="Check Availability"
@@ -280,68 +334,71 @@ const LoanHouseScreen = () => {
                                     isPrimary={true}
 
                                 />
-                            </View>
+                            </View>)
+                    }
 
+
+
+                    {
+                        filteredLoans.length > 0 && (
+                            filteredLoans.map((loan, index) => {
+                                const details: BankLoanDetailProps[] = [
+                                    { title: "Interest/Profit Rate", value: loan.profit_rate },
+                                    { title: "Estimated Monthly Payment", value: loan.estimated_monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+                                    { title: "Maximum Tenure", value: loan.max_tenure },
+                                    { title: "Maximum Margin", value: loan.max_margin },
+                                    { title: "Lock-in Period", value: loan.lock_in_period },
+                                    { title: "Full Flexi Loan", value: loan.full_flexi_loan },
+                                ]
+
+
+                                return (
+                                    <BankLoanCard
+                                        key={index}
+                                        bankName={loan.bank_name}
+                                        loanType="Home Loan"
+                                        details={details}
+                                        onStressTestPress={handlePresentModalPress}
+                                        onApplyPress={() => { }}
+                                    />
+                                )
+                            })
+                        )
+                    }
+
+                    {
+                        filteredLoans.length === 0 && (
                             <View style={{
                                 width: "100%",
-                                marginTop: Sizes.spacing.md
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginVertical: Sizes.spacing.lg
                             }}>
-                                <DefaultButton
-                                    title="Check Financial Stress"
-                                    onPress={() => { handleCalculation() }}
-                                    color={colors.tint}
-                                    borderRadius={100}
-                                    isPrimary={false}
-                                />
+                                <Text>No matching loans found</Text>
                             </View>
-                        </View>)
-                }
+                        )
+                    }
 
-
-
-                {
-                    filteredLoans.length > 0 && (
-                        filteredLoans.map((loan, index) => {
-                            const details: BankLoanDetailProps[] = [
-                                { title: "Interest/Profit Rate", value: loan.profit_rate },
-                                { title: "Estimated Monthly Payment", value: loan.estimated_monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-                                { title: "Maximum Tenure", value: loan.max_tenure },
-                                { title: "Maximum Margin", value: loan.max_margin },
-                                { title: "Lock-in Period", value: loan.lock_in_period },
-                                { title: "Full Flexi Loan", value: loan.full_flexi_loan },
-                            ]
-
-                            console.log('Details ssss: ', details);
-
-                            return (
-                                <BankLoanCard key={index} bankName={loan.bank_name} loanType="Home Loan" details={details} />
-                            )
-                        })
-                    )
-                }
-
-                {
-                    filteredLoans.length === 0 && (
-                        <View style={{
-                            width: "100%",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginVertical: Sizes.spacing.lg
-                        }}>
-                            <Text>No matching loans found</Text>
-                        </View>
-                    )
-                }
-
-
-
+                </View>
 
             </View>
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={1}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+            >
+                <BottomSheetView>
+                    <LoanStressSheet value={stressValue ?? 0} />
 
-        </View>
+                </BottomSheetView>
+            </BottomSheetModal>
+        </>
     )
 }
+
+
 
 const DropdownForm = ({
     colors,

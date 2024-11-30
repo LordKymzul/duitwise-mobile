@@ -21,6 +21,7 @@ import DefaultNetworkImage from "src/core/shared/presentation/components/default
 import { PATHS } from "src/core/constant/Paths";
 import DefaultGoBackButton from "src/core/shared/presentation/components/default-goback-button";
 import { usePortfolioStore } from "../../zustand/portfolio-store";
+import { portfolioData } from "src/core/constant/Data";
 
 
 const PortfolioScreen = () => {
@@ -130,7 +131,7 @@ const PortfolioHeader = ({ color }: { color: any }) => {
 
     const {
         selectedPortfolio,
-        portfolio
+
     } = usePortfolioStore();
 
 
@@ -187,7 +188,7 @@ const PortfolioHeader = ({ color }: { color: any }) => {
                 <Text style={{
                     ...getTitleStyle(Sizes.fontSize.lg, color.onBackground)
                 }}>
-                    RM{isSelectedPortfolio ? selectedPortfolio?.totalBalance : portfolio.reduce((acc, curr) => acc + curr.totalBalance, 0)}
+                    RM{isSelectedPortfolio ? selectedPortfolio?.totalBalance : portfolioData.portfolio.reduce((acc, curr) => acc + curr.totalBalance, 0)}
                 </Text>
                 <Text style={{
                     ...getTitleStyle(Sizes.fontSize.sm, "green")

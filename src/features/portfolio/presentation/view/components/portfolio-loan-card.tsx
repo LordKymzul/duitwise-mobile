@@ -23,6 +23,17 @@ const PortfolioLoanCard = ({ loan }: { loan: Loan }) => {
         navigate
     } = useNavigation<NavigationProp<RootStackParams>>();
 
+    const getColor = (title: string) => {
+        if (title === "Principal & Interest") {
+            return Colors.green;
+        } else if (title === "Insurance Premium") {
+            return Colors.blue;
+        } else if (title === "Maintenance Reserve") {
+            return Colors.purple;
+        }
+        return color.tint;
+    }
+
     return (
         <TouchableOpacity onPress={() => {
             navigate("PortfolioLoanDetail", { loan: loan })
@@ -118,9 +129,9 @@ const PortfolioLoanCard = ({ loan }: { loan: Loan }) => {
                     gap: Sizes.spacing.lg,
                     width: "100%"
                 }}>
-                    <LoanIndicator percentage={50} barColor={color.tint} color={color} title="Principal & Interest" value={`RM ${loan.details.principalAndInterest}`} />
-                    <LoanIndicator percentage={50} barColor={color.tint} color={color} title="Insurance Premium" value={`RM ${loan.details.insurancePremium}`} />
-                    <LoanIndicator percentage={50} barColor={color.tint} color={color} title="Maintenance Reserve" value={`RM ${loan.details.maintenanceReserve}`} />
+                    <LoanIndicator percentage={50} barColor={getColor("Principal & Interest")} color={color} title="Principal & Interest" value={`RM ${loan.details.principalAndInterest}`} />
+                    <LoanIndicator percentage={50} barColor={getColor("Insurance Premium")} color={color} title="Insurance Premium" value={`RM ${loan.details.insurancePremium}`} />
+                    <LoanIndicator percentage={50} barColor={getColor("Maintenance Reserve")} color={color} title="Maintenance Reserve" value={`RM ${loan.details.maintenanceReserve}`} />
                 </View>
 
 
@@ -139,6 +150,17 @@ const PortfolioLoanCard = ({ loan }: { loan: Loan }) => {
                         }}
                         title={capitalizeFirstLetter(loan.status.activeStatus)}
                         color={color.tint}
+                    />
+
+                    <InfoChip
+                        icon={{
+                            name: "information-circle-outline",
+                            size: Sizes.iconSize.md,
+                            color: Colors.blue,
+                            type: "Ionicons"
+                        }}
+                        title="Due Payment"
+                        color={Colors.blue}
                     />
                     {/* <InfoChip
                         icon={{
@@ -193,7 +215,7 @@ const LoanIndicator = ({ percentage, barColor, color, title, value }: { percenta
 
             </View>
 
-            <PercentageBar percentage={50} barColor={color.tint} sizePad={4} />
+            <PercentageBar percentage={percentage} barColor={barColor} sizePad={4} />
 
         </View>
     )

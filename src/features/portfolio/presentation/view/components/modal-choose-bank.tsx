@@ -4,6 +4,7 @@ import DefaultNetworkImage from '@core/shared/presentation/components/default-ne
 import { PATHS } from 'src/core/constant/Paths';
 import { DrawerActions, NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '@core/shared/types/navigation';
+import { usePortfolioStore } from '../../zustand/portfolio-store';
 import { BankPortfolio, portfolioData } from 'src/core/constant/Data';
 
 const { width } = Dimensions.get('window');
@@ -20,24 +21,24 @@ interface ModalChooseBankProps {
 }
 
 const banks: Bank[] = [
-  { 
-    id: 'maybank', 
-    name: 'Maybank', 
+  {
+    id: 'maybank',
+    name: 'Maybank',
     imageURL: PATHS.maybankLogo
   },
-  { 
-    id: 'cimb', 
-    name: 'CIMB', 
+  {
+    id: 'cimb',
+    name: 'CIMB',
     imageURL: PATHS.cimbLogo
   },
-  { 
-    id: 'bankislam', 
-    name: 'Bank Islam', 
+  {
+    id: 'bankislam',
+    name: 'Bank Islam',
     imageURL: PATHS.bankIslamLogo
   },
-  { 
-    id: 'gxbank', 
-    name: 'GX Bank', 
+  {
+    id: 'gxbank',
+    name: 'GX Bank',
     imageURL: PATHS.gxBankLogo
   },
 ];
@@ -57,6 +58,8 @@ const ModalChooseBank: React.FC<ModalChooseBankProps> = ({ visible, onClose, }) 
 
   };
 
+  const { portfolios } = usePortfolioStore();
+
   return (
     <Modal
       visible={visible}
@@ -68,14 +71,14 @@ const ModalChooseBank: React.FC<ModalChooseBankProps> = ({ visible, onClose, }) 
         <View style={styles.modalContent}>
           <View style={styles.header}>
             <Text style={styles.title}>Add Portfolio</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={onClose}
               style={styles.closeButton}
             >
               <Text style={styles.closeButtonText}>✕</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.bankList}>
             <View style={styles.bankRow}>
               {portfolioData.portfolio.map((bank, index) => (

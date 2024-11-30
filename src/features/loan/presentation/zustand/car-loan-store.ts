@@ -1,13 +1,11 @@
+import { PortfolioData, portfolioData } from "src/core/constant/Data";
+
 // Types and interfaces
 interface CarLoan {
     bank_name: string;
     interest_rate: string;
     car_condition: string;
     tenure_period: string;
-}
-
-interface CarLoansData {
-    car_loans: CarLoan[];
 }
 
 export interface CarFilteredLoanInfo extends CarLoan {
@@ -18,14 +16,38 @@ export interface CarFilteredLoanInfo extends CarLoan {
     estimated_monthly_max: number;
 }
 
-/**
- * Filter car loans based on financing amount and selected tenure.
- * 
- * @param financingAmount - Loan amount (1000-50000)
- * @param selectedTenure - Selected loan tenure in years (5, 7, or 9)
- * @param carLoans - Array of car loan objects
- * @returns Array of filtered suitable loans
- */
+interface LoanDetails {
+    type: string;
+    monthlyPayment: number;
+    totalLoan: number;
+    status: {
+        activeStatus: string;
+        paymentStatus: boolean;
+    };
+}
+
+interface BankPortfolio {
+    bankName: string;
+    totalBalance: number;
+    loans: LoanDetails[];
+}
+
+interface FinancialProfile {
+    portfolio: BankPortfolio[];
+    recurringPayments: Record<string, number>;
+}
+
+interface DSRCalculationResult {
+    currentDSR: number;
+    stressedDSR: number;
+    monthlyCommitments: number;
+    newMonthlyCommitment: number;
+    isEligible: boolean;
+    selectedBank: string;
+    estimatedMonthlyPayment: number;
+}
+
+// Function to filter car loans
 export function filterCarLoans(
     financingAmount: number,
     selectedTenure: number,
@@ -35,7 +57,9 @@ export function filterCarLoans(
     if (financingAmount < 1000 || financingAmount > 50000) {
         throw new Error("Financing amount must be between 1000 and 50000");
     }
-    if (![5, 7, 9].includes(selectedTenure)) {
+
+    const validTenures = [5, 7, 9];
+    if (!validTenures.some(t => t === selectedTenure)) {
         throw new Error("Selected tenure must be 5, 7, or 9 years");
     }
 
@@ -46,20 +70,17 @@ export function filterCarLoans(
         let isTenureSuitable = false;
 
         // Handle different tenure period formats
-        if (tenureRange.includes('-')) {
-            // Range format (e.g., "7 - 9 years")
+        if (tenureRange.indexOf('-') !== -1) {
             const [minStr, maxStr] = tenureRange.split('-').map(t => t.trim().split(' ')[0]);
             const minTenure = parseInt(minStr);
             const maxTenure = parseInt(maxStr);
             isTenureSuitable = selectedTenure >= minTenure && selectedTenure <= maxTenure;
         } else {
-            // Single value format (e.g., "9 years")
             const maxTenure = parseInt(tenureRange.split(' ')[0]);
             isTenureSuitable = selectedTenure === maxTenure;
         }
 
         if (isTenureSuitable) {
-            // Create loan info with additional calculated fields
             const loanInfo = { ...loan } as CarFilteredLoanInfo;
             loanInfo.selected_tenure = selectedTenure;
 
@@ -72,8 +93,10 @@ export function filterCarLoans(
             let minRate: number;
             let maxRate: number;
 
-            if (interestRate.includes('-')) {
-                [minRate, maxRate] = interestRate.split('-').map(rate => parseFloat(rate.trim()));
+            if (interestRate.indexOf('-') !== -1) {
+                const [minRateStr, maxRateStr] = interestRate.split('-').map(rate => rate.trim());
+                minRate = parseFloat(minRateStr);
+                maxRate = parseFloat(maxRateStr);
             } else {
                 minRate = maxRate = parseFloat(interestRate);
             }
@@ -81,7 +104,7 @@ export function filterCarLoans(
             loanInfo.min_interest = minRate;
             loanInfo.max_interest = maxRate;
 
-            // Calculate estimated monthly payment range using simple interest formula
+            // Calculate estimated monthly payment range
             const principal = financingAmount;
             const years = selectedTenure;
             const months = years * 12;
@@ -96,12 +119,106 @@ export function filterCarLoans(
         }
     });
 
-    // Sort by minimum interest rate
     return suitableLoans.sort((a, b) => a.min_interest - b.min_interest);
 }
 
-// Sample data
-const carLoansData: CarLoansData = {
+// Function to calculate total recurring payments
+function calculateTotalRecurringPayments(recurringPayments: any): number {
+    return Object.keys(recurringPayments).reduce((sum, key) => {
+        return sum + recurringPayments[key];
+    }, 0);
+}
+
+// Function to calculate DSR
+export function calculateDSR(
+    profile: PortfolioData,
+    requestedLoanAmount: number,
+    selectedTenure: number,
+    monthlyIncome: number,
+    selectedLoan: CarFilteredLoanInfo
+): DSRCalculationResult {
+    // Calculate current total monthly loan payments
+    const currentTotalLoanPayment = profile.portfolio.reduce((total, bank) => {
+        const bankTotal = bank.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
+        return total + bankTotal;
+    }, 0);
+
+    // Calculate total recurring payments using the helper function
+    const totalRecurringPayment = calculateTotalRecurringPayments(profile.recurringPayments);
+
+    // Calculate current monthly commitments
+    const currentMonthlyCommitments = currentTotalLoanPayment + totalRecurringPayment;
+
+    // Calculate new monthly loan payment (using average of min and max)
+    const estimatedMonthlyPayment = (selectedLoan.estimated_monthly_min + selectedLoan.estimated_monthly_max) / 2;
+
+    // Calculate new total monthly commitment
+    const newMonthlyCommitment = currentMonthlyCommitments + estimatedMonthlyPayment;
+
+    // Calculate DSR percentages
+    const currentDSR = (currentMonthlyCommitments / monthlyIncome) * 100;
+    const stressedDSR = (newMonthlyCommitment / monthlyIncome) * 100;
+
+    // Check if eligible (example threshold of 70%)
+    const isEligible = stressedDSR <= 70;
+
+    return {
+        currentDSR: Math.round(currentDSR * 100) / 100,
+        stressedDSR: Math.round(stressedDSR * 100) / 100,
+        monthlyCommitments: Math.round(currentMonthlyCommitments * 100) / 100,
+        newMonthlyCommitment: Math.round(newMonthlyCommitment * 100) / 100,
+        isEligible,
+        selectedBank: selectedLoan.bank_name,
+        estimatedMonthlyPayment: Math.round(estimatedMonthlyPayment * 100) / 100
+    };
+}
+
+
+// Example calculation
+export function calculateLoanEligibility(
+    profile: PortfolioData,
+    requestedAmount: number,
+    tenure: number,
+    monthlyIncome: number
+) {
+
+    let dsr: DSRCalculationResult[] = [];
+    try {
+        // First, filter suitable car loans
+        const suitableLoans = filterCarLoans(requestedAmount, tenure, carLoansData.car_loans);
+
+        if (suitableLoans.length === 0) {
+            console.log('No suitable loans found for the given criteria.');
+            return;
+        }
+
+        // Calculate DSR for each suitable loan
+        suitableLoans.forEach(loan => {
+            const dsrResult = calculateDSR(portfolioData, requestedAmount, tenure, monthlyIncome, loan);
+            dsr.push(dsrResult);
+            // console.log(`\nBank: ${loan.bank_name}`);
+            // console.log(`Interest Rate: ${loan.interest_rate}`);
+            // console.log(`Estimated Monthly Payment: RM ${dsrResult.estimatedMonthlyPayment}`);
+            // console.log(`Current DSR: ${dsrResult.currentDSR}%`);
+            // console.log(`Stressed DSR: ${dsrResult.stressedDSR}%`);
+            // console.log(`Current Monthly Commitments: RM ${dsrResult.monthlyCommitments}`);
+            // console.log(`New Monthly Commitment: RM ${dsrResult.newMonthlyCommitment}`);
+            // console.log(`Eligible: ${dsrResult.isEligible ? 'Yes' : 'No'}`);
+        });
+
+        return dsr;
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(`Error: ${error.message}`);
+        } else {
+            console.log('An unknown error occurred');
+        }
+    }
+}
+
+// Define car loans data
+export const carLoansData = {
     "car_loans": [
         {
             "bank_name": "Affin Bank Conventional Hire Purchase",
@@ -182,24 +299,7 @@ const carLoansData: CarLoansData = {
             "tenure_period": "9 years"
         }
     ]
-}
+};
 
 // Example usage
-try {
-    const filteredLoans = filterCarLoans(30000, 7, carLoansData.car_loans);
-
-    console.log(`\nFound ${filteredLoans.length} matching loans:`);
-    filteredLoans.forEach(loan => {
-        console.log(`\nBank: ${loan.bank_name}`);
-        console.log(`Interest Rate: ${loan.interest_rate}`);
-        console.log(`Estimated Monthly Payment: RM ${loan.estimated_monthly_min.toFixed(2)} - RM ${loan.estimated_monthly_max.toFixed(2)}`);
-        console.log(`Car Condition: ${loan.car_condition}`);
-        console.log(`Tenure Period: ${loan.tenure_period}`);
-    });
-} catch (error) {
-    if (error instanceof Error) {
-        console.log(`Error: ${error.message}`);
-    } else {
-        console.log('An unknown error occurred');
-    }
-}
+calculateLoanEligibility(portfolioData, 30000, 7, 8000);
