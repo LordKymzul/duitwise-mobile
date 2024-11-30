@@ -609,6 +609,10 @@ export function calculateTotalMonthlyPayments(): number {
     return totalLoanPayments + totalRecurringPayments;
 }
 
+export const calculateTotalBalance = (): number => {
+    return portfolioData.portfolio.reduce((total, bank) => total + bank.totalBalance, 0);
+}
+
 // Example usage:
 const totalMonthlyPayments = calculateTotalMonthlyPayments();
 // Returns 5636.60 (Loans: 5500 + Recurring: 136.60)

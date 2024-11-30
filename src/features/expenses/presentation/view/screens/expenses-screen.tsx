@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useColorScheme, View, ScrollView } from "react-native";
 import { COLORS } from "src/core/constant/Colors";
 import { Sizes } from "src/core/constant/Sizes";
@@ -8,6 +8,9 @@ import ExpensesTransactionScreen from "./expenses-transaction-screen";
 import ExpensesSummaryScreen from "./expenses-summary-screen";
 import { usePortfolioStore } from "src/features/portfolio/presentation/zustand/portfolio-store";
 import AIAgentButton from "src/core/shared/presentation/components/ai-agent-button";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import AiAgentSheet from "src/features/ai-agent/presentation/view/components/ai-agent-sheet";
+import LoanStressSheet from "src/features/loan/presentation/view/components/loan-stress-sheet";
 
 
 
@@ -29,6 +32,24 @@ const ExpensesScreen = () => {
         };
         fetchPortfolios();
     }, []);
+
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
+
+
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior={"close"}
+            />
+        ),
+        []
+    );
+
 
     return (
 
@@ -73,7 +94,21 @@ const ExpensesScreen = () => {
 
                 </View>
             </ScrollView>
-            <AIAgentButton handleTransactionPress={() => { }} />
+            <AIAgentButton handleTransactionPress={() => {
+                bottomSheetRef.current?.present();
+            }} />
+
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={3}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+            >
+                <BottomSheetView>
+                    <AiAgentSheet />
+                </BottomSheetView>
+            </BottomSheetModal>
+
         </>
     )
 }

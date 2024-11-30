@@ -36,6 +36,8 @@ export const Colors = {
     blueTransparent: "#bfd7fe",
     purpleTransparent: "#ecd5ff",
     greenTransparent: "#b5fdc0",
+    red: "#FF0000",
+    redTransparent: "#ffd6d6",
 
     linearPersonalLoan: ["#9461F1", "#7D3EEE"],
     carLoan: ["#5585F0", "#1157D0"],

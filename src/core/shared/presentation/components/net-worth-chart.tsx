@@ -2,6 +2,7 @@ import * as React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import PieChart from 'react-native-pie-chart';
 import { FontAwesome } from '@expo/vector-icons';
+import { calculateTotalBalance } from 'src/core/constant/Data';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -101,8 +102,8 @@ const styles = StyleSheet.create({
 });
 
 type NetWorthChartProps = {
-    totalAmount: number;
-    data: { value: number; key: string; svg: { fill: string }; label: string }[];
+  totalAmount: number;
+  data: { value: number; key: string; svg: { fill: string }; label: string }[];
 };
 
 const NetWorthChart: React.FC<NetWorthChartProps> = ({ totalAmount, data }) => {
@@ -130,7 +131,7 @@ const NetWorthChart: React.FC<NetWorthChartProps> = ({ totalAmount, data }) => {
         <View style={styles.centerContent}>
           <Text style={styles.centerLabel}>Total Worth</Text>
           <Text style={styles.totalAmount}>
-            RM {totalAmount.toLocaleString()}
+            RM {calculateTotalBalance()}
           </Text>
         </View>
       </View>

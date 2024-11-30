@@ -8,7 +8,7 @@ import { Sizes } from "src/core/constant/Sizes";
 import PieChart from "react-native-pie-chart";
 import { chartData } from "src/core/shared/utils/helper";
 import DefaultAccordian from "src/core/shared/presentation/components/default-accordian";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -16,11 +16,33 @@ const summaryAccordianData = [
     {
         "label": "Total Income",
         "value": "totalIncome",
+        "type": "income",
+        "contents": [
+            {
+                "title": "Grab Driver Payment Transfer",
+                "value": "RM 1856.30"
+            },
+            {
+                "title": "LALAMOVE",
+                "value": "RM 600.90"
+            }
+        ],
         "isOpen": true
     },
     {
         "label": "Total Expenses",
         "value": "totalExpenses",
+        "type": "expense",
+        "contents": [
+            {
+                "title": "Food",
+                "value": "RM 230.90"
+            },
+            {
+                "title": "Transport",
+                "value": "RM 600.90"
+            }
+        ],
         "isOpen": true
     }
 ]
@@ -33,6 +55,11 @@ const ExpensesSummaryScreen = () => {
 
 
     const [summaryAccordian, setSummaryAccordian] = useState(summaryAccordianData);
+
+
+    useEffect(() => {
+        setSummaryAccordian(summaryAccordianData);
+    }, [summaryAccordian]);
 
 
     const handleAccordian = (value: boolean, index: number) => {
@@ -76,7 +103,7 @@ const ExpensesSummaryScreen = () => {
                             type: "Ionicons"
                         }}
                         title="Total Income"
-                        subtitle="RM8,000"
+                        subtitle="RM3,000"
                     />
                 </View>
 
@@ -91,7 +118,7 @@ const ExpensesSummaryScreen = () => {
                             type: "Ionicons"
                         }}
                         title="Total Expenses"
-                        subtitle="RM8,000"
+                        subtitle="RM 565.90"
                     />
                 </View>
                 <View style={{
@@ -105,7 +132,7 @@ const ExpensesSummaryScreen = () => {
                             type: "Ionicons"
                         }}
                         title="Monthly Surplus"
-                        subtitle="RM8,000"
+                        subtitle="RM 2,434.10"
                     />
                 </View>
 
@@ -126,11 +153,21 @@ const ExpensesSummaryScreen = () => {
                         >
                             {
                                 item.isOpen && (
-                                    <SummaryCard
-                                        title={item.label}
-                                        value="RM 5,000"
-                                        type="income"
-                                    />
+                                    item.contents.map((content, index) => (
+                                        <View
+                                            key={index}
+                                            style={{
+                                                marginTop: Sizes.spacing.md,
+                                                width: "100%",
+                                            }}>
+                                            <SummaryCard
+                                                key={index}
+                                                title={content.title}
+                                                value={content.value}
+                                                type={item.type as any}
+                                            />
+                                        </View>
+                                    ))
                                 )
                             }
 

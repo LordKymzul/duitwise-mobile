@@ -18,8 +18,8 @@ const SummaryTypeCard = ({ icon, title, subtitle }: { icon: IconProps, title: st
 
     switch (title) {
         case "Total Expenses":
-            colorMain = Colors.purple;
-            colorSecondary = Colors.purpleTransparent;
+            colorMain = Colors.red;
+            colorSecondary = Colors.redTransparent;
             break;
         case "Total Income":
             colorMain = Colors.green;

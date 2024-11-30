@@ -28,13 +28,13 @@ const loanDurationData = [
     },
     {
         title: "7 Years",
-        description: "Lower montly payments",
+        description: "Extended Payment Plan",
         value: 7,
         isChecked: false
     },
     {
         title: "9 Years",
-        description: "Lower montly payments",
+        description: "Maximum Term Length",
         value: 9,
         isChecked: false
     }
@@ -239,7 +239,7 @@ const LoanCarScreen = () => {
                     gap: Sizes.spacing.md,
                 }}>
 
-                    <View style={{
+                    {/* <View style={{
                         flexDirection: "column",
                         alignItems: "flex-start",
                         justifyContent: "flex-start",
@@ -249,9 +249,9 @@ const LoanCarScreen = () => {
                             Available Loans
                         </Text>
                         <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
-                            Found 4 loans
+                            Found {filteredLoans.length} loans
                         </Text>
-                    </View>
+                    </View> */}
 
                     {
                         filteredLoans.length > 0 && (

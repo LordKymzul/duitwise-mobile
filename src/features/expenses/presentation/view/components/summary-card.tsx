@@ -28,7 +28,7 @@ const SummaryCard = ({
             color = Colors.green;
             break;
         case "expense":
-            color = Colors.purple;
+            color = 'red';
             break;
         case "monthly":
             color = Colors.blue;
