@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
-import { View, Text, useColorScheme, Image } from "react-native";
+import { useLayoutEffect, useState } from "react";
+import { View, Text, useColorScheme, Image, ActivityIndicator } from "react-native";
 import { COLORS } from "src/core/constant/Colors";
 import { Sizes } from "src/core/constant/Sizes";
 import { getSubtitleStyle, getTitleStyle } from "src/core/constant/Texts";
@@ -18,6 +18,8 @@ const ReceiptAttachedScreen = () => {
     const route = useRoute<ReceiptAttachedScreenRouteProp>();
     const { receipt } = route.params;
 
+    const [isLoading, setIsLoading] = useState(false);
+
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -26,6 +28,13 @@ const ReceiptAttachedScreen = () => {
         });
 
     }, []);
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        navigation.navigate("MainBottomNavbar");
+        setIsLoading(false);
+    }
 
 
     return (
@@ -69,21 +78,23 @@ const ReceiptAttachedScreen = () => {
             </View>
 
 
-            <View style={{
-                paddingHorizontal: Sizes.spacing.lg,
-                marginBottom: Sizes.spacing.xl,
-                width: "100%",
-            }}>
-                <DefaultButton
-                    title="Submit"
-                    onPress={() => { }}
-                    color={colors.tint}
-                    isPrimary={true}
-                    borderRadius={100}
+            {
+                isLoading ? <ActivityIndicator size="large" color={colors.tint} style={{ marginTop: Sizes.spacing.xl, alignSelf: "center" }} /> :
+                    <View style={{
+                        paddingHorizontal: Sizes.spacing.lg,
+                        marginBottom: Sizes.spacing.xl,
+                        width: "100%",
+                    }}>
+                        <DefaultButton
+                            title="Submit"
+                            onPress={handleSubmit}
+                            color={colors.tint}
+                            isPrimary={true}
+                            borderRadius={100}
 
-                />
-            </View>
-
+                        />
+                    </View>
+            }
         </View>
     );
 };

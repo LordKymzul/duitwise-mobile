@@ -1,7 +1,7 @@
 import { RootStackParams } from "src/core/shared/types/navigation";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { View, Text, useColorScheme, TouchableOpacity, ScrollView } from "react-native"
 import {
     Ionicons
@@ -22,6 +22,9 @@ import { PATHS } from "src/core/constant/Paths";
 import DefaultGoBackButton from "src/core/shared/presentation/components/default-goback-button";
 import { usePortfolioStore } from "../../zustand/portfolio-store";
 import { portfolioData } from "src/core/constant/Data";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import LoanStressSheet from "src/features/loan/presentation/view/components/loan-stress-sheet";
 
 
 const PortfolioScreen = () => {
@@ -37,6 +40,8 @@ const PortfolioScreen = () => {
     const colors = useColorScheme();
     const color = COLORS[colors ?? "dark"];
     const isDarkMode = colors === "dark";
+
+
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -78,51 +83,55 @@ const PortfolioScreen = () => {
 
     return (
 
-        <Tabs.Container
+        <>
+            <Tabs.Container
 
-            headerContainerStyle={{
-                backgroundColor: color.background,
-                elevation: 0,
-                shadowOpacity: 0,
-            }}
-            renderHeader={() => (
-                <PortfolioHeader color={color} />
-            )}
-            renderTabBar={props => (
-                <MaterialTabBar
-                    {...props}
-                    scrollEnabled={false}
-                    labelStyle={getTitleStyle(Sizes.fontSize.md, color.onBackground)}
-                    activeColor={color.onBackground}
-                    inactiveColor={color.onBackground}
-                    indicatorStyle={{
-                        backgroundColor: color.tint,
-                        height: 3,
-                        width: "auto",
-                        borderRadius: 100
-                    }}
-                    style={{ backgroundColor: color.background }}
-                />
-            )}
-        >
-            <Tabs.Tab name="Loan" label="Loan">
-                <Tabs.ScrollView showsVerticalScrollIndicator={false} style={{
-                    flex: 1,
-                    backgroundColor: color.background
-                }}>
-                    <PortfolioLoanScreen />
-                </Tabs.ScrollView>
-            </Tabs.Tab>
-            <Tabs.Tab name="Assets" label="Assets">
-                <Tabs.ScrollView showsVerticalScrollIndicator={false} style={{
-                    flex: 1,
-                    backgroundColor: color.background
-                }}>
-                    <PortfolioAssetScreen />
-                </Tabs.ScrollView>
-            </Tabs.Tab>
+                headerContainerStyle={{
+                    backgroundColor: color.background,
+                    elevation: 0,
+                    shadowOpacity: 0,
+                }}
+                renderHeader={() => (
+                    <PortfolioHeader color={color} />
+                )}
+                renderTabBar={props => (
+                    <MaterialTabBar
+                        {...props}
+                        scrollEnabled={false}
+                        labelStyle={getTitleStyle(Sizes.fontSize.md, color.onBackground)}
+                        activeColor={color.onBackground}
+                        inactiveColor={color.onBackground}
+                        indicatorStyle={{
+                            backgroundColor: color.tint,
+                            height: 3,
+                            width: "auto",
+                            borderRadius: 100
+                        }}
+                        style={{ backgroundColor: color.background }}
+                    />
+                )}
+            >
+                <Tabs.Tab name="Loan" label="Loan">
+                    <Tabs.ScrollView showsVerticalScrollIndicator={false} style={{
+                        flex: 1,
+                        backgroundColor: color.background
+                    }}>
+                        <PortfolioLoanScreen />
+                    </Tabs.ScrollView>
+                </Tabs.Tab>
+                <Tabs.Tab name="Assets" label="Assets">
+                    <Tabs.ScrollView showsVerticalScrollIndicator={false} style={{
+                        flex: 1,
+                        backgroundColor: color.background
+                    }}>
+                        <PortfolioAssetScreen />
+                    </Tabs.ScrollView>
+                </Tabs.Tab>
 
-        </Tabs.Container>
+            </Tabs.Container>
+
+
+        </>
     )
 }
 

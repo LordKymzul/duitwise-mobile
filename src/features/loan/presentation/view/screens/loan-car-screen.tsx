@@ -3,7 +3,6 @@ import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import { SliderForm } from "../../../../../core/shared/presentation/components/slider-form";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
-import { calculateTotalMonthlyPayments, portfolioData } from "src/core/constant/Data";
 import DefaultButton from "src/core/shared/presentation/components/default-button";
 import { useCallback, useMemo, useRef, useState } from "react";
 import BankLoanCard, { BankLoanDetailProps } from "../components/bank-loan-card";
@@ -11,9 +10,12 @@ import CheckBox from 'react-native-check-box'
 import Toast from "react-native-toast-message";
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import LoanStressSheet from "../components/loan-stress-sheet";
 import { filterCarLoans } from "../../zustand/loan-store";
 import { calculateLoanEligibility, CarFilteredLoanInfo, carLoansData } from "../../zustand/car-loan-store";
+import ApplyLoanSheet from "../components/apply-loan-sheet";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
+import { RootStackParams } from "src/core/shared/types/navigation";
 
 
 // npm i--save - dev @types/react-native-check-box
@@ -57,8 +59,24 @@ const LoanCarScreen = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const [isApplying, setIsApplying] = useState<boolean>(false);
+
     const [stressValue, setStressValue] = useState<number>(0);
 
+    const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+    const handleApplyWithPaduPress = () => {
+        setIsApplying(true);
+        setTimeout(() => {
+            setIsApplying(false);
+            navigation.navigate("SuccessScreen", {
+                title: "Loan Applied",
+                description: "Your loan has been applied successfully"
+            });
+            bottomSheetRef.current?.dismiss();
+        }, 1000);
+
+    }
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -132,29 +150,27 @@ const LoanCarScreen = () => {
         setSelectedLoanDuration(updatedLoanDuration[index].value);
     }
 
-    const handleStressTest = () => {
+    // const handleStressTest = () => {
+    //     try {
+    //         const analysis = calculateLoanEligibility(portfolioData, financingAmount, selectedLoanDuration, 3000);
+    //         const currentDSR = analysis?.[0].currentDSR;
+    //         setStressValue(currentDSR ?? 0);
+    //     } catch (e) {
+    //         Toast.show({
+    //             text1: "An error occurred",
+    //             text2: "Please try again",
+    //             type: "error"
+    //         });
+    //     }
+    // }
 
-        try {
-            const analysis = calculateLoanEligibility(portfolioData, financingAmount, selectedLoanDuration, 3000);
-
-            console.log("Analysis: ", analysis);
-
-            const currentDSR = analysis?.[0].currentDSR;
-            setStressValue(currentDSR ?? 0);
-
-        } catch (e) {
-            Toast.show({
-                text1: "An error occurred",
-                text2: "Please try again",
-                type: "error"
-            });
-        }
-
+    const getStressValue = (loan: CarFilteredLoanInfo) => {
+        return 40;
     }
 
     const handlePresentModalPress = () => {
         bottomSheetRef.current?.present();
-        handleStressTest();
+
     }
 
     return (
@@ -268,7 +284,10 @@ const LoanCarScreen = () => {
                                     loanType="Car Loan"
                                     details={details}
                                     onStressTestPress={handlePresentModalPress}
-                                    onApplyPress={() => { }}
+                                    onApplyPress={() => {
+                                        bottomSheetRef.current?.present();
+                                    }}
+                                    stressValue={getStressValue(loan) ?? 0}
                                 />
                             })
                         )
@@ -297,9 +316,13 @@ const LoanCarScreen = () => {
                 backdropComponent={renderBackdrop}
             >
                 <BottomSheetView>
-                    <LoanStressSheet value={stressValue ?? 0} />
-
-
+                    <ApplyLoanSheet
+                        applyManuallyPress={() => {
+                            bottomSheetRef.current?.dismiss();
+                        }}
+                        applyWithPaduPress={handleApplyWithPaduPress}
+                        isLoading={isApplying}
+                    />
                 </BottomSheetView>
             </BottomSheetModal>
         </>

@@ -17,6 +17,10 @@ import { calculateTotalMonthlyPayments } from "src/core/constant/Data";
 import DefaultGauge from "src/core/shared/presentation/components/default-gauge";
 import { Image } from "react-native";
 import LoanStressSheet from "../components/loan-stress-sheet";
+import ApplyLoanSheet from "../components/apply-loan-sheet";
+import { NavigationProp } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParams } from "src/core/shared/types/navigation";
 
 
 const advanceOptions = [
@@ -89,6 +93,23 @@ const LoanHouseScreen = () => {
 
 
     const [filteredLoans, setFilteredLoans] = useState<FilteredLoanInfo[]>([]);
+    const [isApplying, setIsApplying] = useState<boolean>(false);
+
+
+    const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+    const handleApplyWithPaduPress = () => {
+        setIsApplying(true);
+
+        setTimeout(() => {
+            setIsApplying(false);
+            navigation.navigate("SuccessScreen", {
+                title: "Loan Applied",
+                description: "Your loan has been applied successfully"
+            });
+            bottomSheetRef.current?.dismiss();
+        }, 1000);
+    }
 
     const handleRateType = (value: string) => {
         setRateType(value);
@@ -161,7 +182,7 @@ const LoanHouseScreen = () => {
                     { flexiLoan: flexiLoan === "Yes", financeType: financeType as "islamic" | "conventional", bankName: bankAndLoanType });
             const currentDsr = Number.parseFloat(analysis.summary.currentDsr.replace("%", ""));
             setStressValue(currentDsr);
-            console.log('Stress Test' + currentDsr);
+            console.log('Stress Test' + analysis);
         } catch (e) {
             console.log('Error: ', e);
             Toast.show({
@@ -170,6 +191,18 @@ const LoanHouseScreen = () => {
                 type: "error"
             });
         }
+    }
+
+    const getStressValue = () => {
+        const analysis = analyzeMortgage
+            (propertyValue,
+                loanPercentage,
+                3000,
+                calculateTotalMonthlyPayments(),
+                500,
+                { flexiLoan: flexiLoan === "Yes", financeType: financeType as "islamic" | "conventional", bankName: bankAndLoanType });
+        const currentDsr = Number.parseFloat(analysis.summary.currentDsr.replace("%", ""));
+        return currentDsr;
     }
 
     // const handlePresentModalPress = useCallback(() => {
@@ -359,7 +392,10 @@ const LoanHouseScreen = () => {
                                         loanType="Home Loan"
                                         details={details}
                                         onStressTestPress={handlePresentModalPress}
-                                        onApplyPress={() => { }}
+                                        onApplyPress={() => {
+                                            bottomSheetRef.current?.present();
+                                        }}
+                                        stressValue={getStressValue()}
                                     />
                                 )
                             })
@@ -390,7 +426,13 @@ const LoanHouseScreen = () => {
                 backdropComponent={renderBackdrop}
             >
                 <BottomSheetView>
-                    <LoanStressSheet value={stressValue ?? 0} />
+                    <ApplyLoanSheet
+                        applyManuallyPress={() => {
+                            bottomSheetRef.current?.dismiss();
+                        }}
+                        applyWithPaduPress={handleApplyWithPaduPress}
+                        isLoading={isApplying}
+                    />
 
                 </BottomSheetView>
             </BottomSheetModal>

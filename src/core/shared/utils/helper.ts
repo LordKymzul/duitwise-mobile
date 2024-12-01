@@ -29,25 +29,29 @@ export const chartData = [
     {
         value: 25,
         key: 'gx-bank',
-        svg: { fill: '#4285F4' },
-        label: 'GX Bank'
+        svg: { fill: '#9F7AEA' },
+        label: 'GX Bank',
+        gradientColors: ['#9F7AEA', '#B794F4', '#D6BCFA']
     },
     {
         value: 10,
         key: 'bank-islam',
-        svg: { fill: '#34A853' },
-        label: 'Bank Islam'
+        svg: { fill: '#48BB78' },
+        label: 'Bank Islam',
+        gradientColors: ['#48BB78', '#68D391', '#9AE6B4']
     },
     {
         value: 30,
         key: 'maybank',
-        svg: { fill: '#FBBC05' },
-        label: 'Maybank'
+        svg: { fill: '#ECC94B' },
+        label: 'Maybank',
+        gradientColors: ['#ECC94B', '#F6E05E', '#FAF089']
     },
     {
         value: 25,
         key: 'cimb',
-        svg: { fill: '#EA4335' },
-        label: 'CIMB'
+        svg: { fill: '#F56565' },
+        label: 'CIMB',
+        gradientColors: ['#F56565', '#FC8181', '#FEB2B2']
     },
 ];

@@ -3,8 +3,12 @@ import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-ic
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
 import BankLoanDetailTile from "./bank-loan-detail-tile";
 import { Sizes } from "../../../../../core/constant/Sizes";
-import { COLORS } from "../../../../../core/constant/Colors";
+import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import DefaultButton from "src/core/shared/presentation/components/default-button";
+import DefaultGauge from "src/core/shared/presentation/components/default-gauge";
+import LoanStressSheet from "./loan-stress-sheet";
+import { PATHS } from "src/core/constant/Paths";
+import DefaultNetworkImage from "src/core/shared/presentation/components/default-network-image";
 
 
 
@@ -20,14 +24,67 @@ export interface BankLoanCardProps {
     details: BankLoanDetailProps[];
     onStressTestPress: () => void;
     onApplyPress: () => void;
+    stressValue: number;
 }
 
-const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyPress }: BankLoanCardProps) => {
+const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyPress, stressValue }: BankLoanCardProps) => {
 
     const colorScheme = useColorScheme();
     const colors = COLORS[colorScheme ?? "dark"];
 
 
+    const gaugeImage = (value: number) => {
+        if (value < 25) {
+            return require('@assets/images/low.png');
+        } else if (value > 25 && value < 50) {
+            return require('@assets/images/mid.png');
+        } else if (value > 50 && value < 75) {
+            return require('@assets/images/high.png');
+        } else {
+            return require('@assets/images/mati.png');
+        }
+    }
+
+    const getColor = (value: number) => {
+        if (value < 25) {
+            return Colors.green;
+        } else if (value > 25 && value < 50) {
+            return "yellow";
+        } else if (value > 50 && value < 75) {
+            return "orange";
+        } else {
+            return "red"
+        }
+    }
+
+    const gaugeValue = (value: number) => {
+        if (value < 25) {
+            return "Low"
+        } else if (value >= 25 && value < 50) {
+            return "Medium"
+        } else if (value >= 50 && value < 75) {
+            return "High"
+        } else {
+            return "Extreme"
+        }
+    }
+    const getIconBank = (bankName: string) => {
+        if (bankName.toLowerCase().includes("maybank")) {
+            return PATHS.maybankLogo;
+        }
+        else if (bankName.toLowerCase().includes("cimb")) {
+            return PATHS.cimbLogo;
+        }
+        else if (bankName.toLowerCase().includes("islam")) {
+            return PATHS.bankIslamLogo;
+        } else if (bankName.toLowerCase().includes("rhb")) {
+            return PATHS.rhbLogo;
+        } else if (bankName.toLowerCase().includes("bsn")) {
+            return PATHS.bsnLogo;
+        } else {
+            return PATHS.unknownURL;
+        }
+    }
 
     return (
         <View style={{
@@ -42,6 +99,7 @@ const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyP
             borderRadius: Sizes.borderRadius.md
         }}>
 
+
             <View style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -49,7 +107,13 @@ const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyP
                 gap: Sizes.spacing.lg
             }}>
 
-                <MaterialCommunityIcons name="bank" color={colors.onBackground} size={Sizes.iconSize.lg} />
+                {/* <MaterialCommunityIcons name="bank" color={colors.onBackground} size={Sizes.iconSize.lg} /> */}
+                <DefaultNetworkImage
+                    uri={getIconBank(bankName)}
+                    height={40}
+                    width={40}
+                    borderRadius={100}
+                />
 
                 <View style={{
                     flexDirection: "column",
@@ -59,19 +123,12 @@ const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyP
                 }}>
 
                     <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
-                        {loanType}
+                        {bankName}
                     </Text>
 
-                    <View style={{
-                        backgroundColor: colors.tint,
-                        paddingHorizontal: Sizes.padding.md,
-                        paddingVertical: Sizes.padding.sm,
-                        borderRadius: 100
-                    }}>
-                        <Text style={[getSubtitleStyle(Sizes.fontSize.sm, "white")]}>
-                            Popular
-                        </Text>
-                    </View>
+                    <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                        {loanType}
+                    </Text>
 
                 </View>
 
@@ -91,30 +148,52 @@ const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyP
                     ))
                 }
 
+
             </View>
 
             <View style={{
                 width: "100%",
-                flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: Sizes.spacing.lg,
-                marginTop: Sizes.spacing.lg,
-            }}>
+                flexDirection: "row",
 
+            }}>
                 <View style={{
-                    flex: 1
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                    gap: Sizes.spacing.sm
                 }}>
-                    <DefaultButton
-                        title="Stress Test"
-                        onPress={onStressTestPress}
-                        color={colors.tint}
-                        isPrimary={false}
-                    />
+                    <Text style={[getTitleStyle(Sizes.fontSize.md, colors.onBackground)]}>
+                        Stress Test
+                    </Text>
+
+                    <Text style={[getSubtitleStyle(Sizes.fontSize.sm, colors.onBackground)]}>
+                        {gaugeValue(stressValue)}
+                    </Text>
                 </View>
 
+
+                <Image source={gaugeImage(stressValue)} style={{
+                    width: 100,
+                    height: 100,
+                    resizeMode: "contain",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignSelf: "center",
+
+                }} />
+            </View>
+
+
+
+            <View style={{
+                width: "100%",
+                flexDirection: "row",
+            }}>
                 <View style={{
-                    flex: 1
+                    flex: 1,
+
                 }}>
                     <DefaultButton
                         title="Apply"
@@ -122,9 +201,11 @@ const BankLoanCard = ({ bankName, loanType, details, onStressTestPress, onApplyP
                         color={colors.tint}
                         isPrimary={true}
                     />
-                </View>
 
+                </View>
             </View>
+
+
 
         </View>
     )

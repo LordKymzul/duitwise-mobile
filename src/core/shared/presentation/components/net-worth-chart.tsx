@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-nati
 import PieChart from 'react-native-pie-chart';
 import { FontAwesome } from '@expo/vector-icons';
 import { calculateTotalBalance } from 'src/core/constant/Data';
+import { LinearGradient } from 'expo-linear-gradient';
+import { chartData } from '../../utils/helper';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -106,6 +108,21 @@ type NetWorthChartProps = {
   data: { value: number; key: string; svg: { fill: string }; label: string }[];
 };
 
+const GradientPieChart: React.FC<{
+  data: typeof chartData;
+  size: number;
+}> = ({ data, size }) => {
+  return (
+    <PieChart
+      widthAndHeight={size}
+      series={data.map(item => item.value)}
+      sliceColor={data.map(item => item.svg.fill)}
+      coverRadius={0.8}
+      coverFill={'#FFF'}
+    />
+  );
+};
+
 const NetWorthChart: React.FC<NetWorthChartProps> = ({ totalAmount, data }) => {
   return (
     <View style={styles.chartContainer}>
@@ -121,12 +138,9 @@ const NetWorthChart: React.FC<NetWorthChartProps> = ({ totalAmount, data }) => {
       </View>
 
       <View style={styles.chartWrapper}>
-        <PieChart
-          widthAndHeight={180}
-          series={data.map(item => item.value)}
-          sliceColor={data.map(item => item.svg.fill)}
-          coverRadius={0.75}
-          coverFill={'#FFF'}
+        <GradientPieChart
+          data={chartData}
+          size={180}
         />
         <View style={styles.centerContent}>
           <Text style={styles.centerLabel}>Total Worth</Text>

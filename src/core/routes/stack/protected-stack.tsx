@@ -8,6 +8,7 @@ import { ReceiptClaimedScreen } from "src/features/receipt/presentation/view/scr
 import { PortfolioDrawer } from "../drawer/portfolio-drawer";
 import ReceiptAttachedScreen from "src/features/receipt/presentation/view/screens/receipt-attached-screen";
 import LoginPortfolio from "src/features/portfolio/presentation/view/screen/login-portfolio";
+import SuccessScreen from "src/core/shared/presentation/screen/success-screen";
 
 const ProtectedStack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ const ProtectedStackGroup = () => {
             <ProtectedStack.Screen options={{ headerShown: true, headerTitle: "" }} name="ReceiptDetail" component={ReceiptClaimedScreen} />
             <ProtectedStack.Screen options={{ headerShown: true, headerTitle: "" }} name="ReceiptAttached" component={ReceiptAttachedScreen} />
             <ProtectedStack.Screen options={{ headerShown: true, headerTitle: "" }} name="LoginPortfolio" component={LoginPortfolio} />
+            <ProtectedStack.Screen options={{ headerShown: true, headerTitle: "" }} name="SuccessScreen" component={SuccessScreen} />
         </ProtectedStack.Navigator>
     )
 }

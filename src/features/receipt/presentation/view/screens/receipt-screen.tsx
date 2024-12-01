@@ -3,15 +3,19 @@ import { COLORS } from "../../../../../core/constant/Colors";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import { Dimensions } from 'react-native'
-import { Ionicons } from '@expo/vector-icons';
-import { useLayoutEffect } from "react";
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParams } from "src/core/shared/types/navigation";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import ReceiptCard, { ReceiptEntity } from "../components/recepit-card";
-
+import DefaultButton from "src/core/shared/presentation/components/default-button";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { Image } from "react-native";
 
 
 const receipts: ReceiptEntity[] = [
@@ -68,8 +72,22 @@ const ReceiptScreen = () => {
     }
 
 
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
 
 
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior={"close"}
+            />
+        ),
+        []
+    );
 
     return (
         <>
@@ -120,9 +138,34 @@ const ReceiptScreen = () => {
                                 gap: Sizes.spacing.lg,
                             }}>
 
-                                <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
-                                    Relief Categories
-                                </Text>
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: Sizes.spacing.sm,
+                                    width: "100%",
+                                    justifyContent: "space-between"
+                                }}>
+                                    <Text style={[getTitleStyle(Sizes.fontSize.lg, colors.onBackground)]}>
+                                        Tax Relief
+                                    </Text>
+
+                                    <TouchableOpacity onPress={() => {
+                                        bottomSheetRef.current?.present();
+                                    }}
+                                        style={{
+                                            backgroundColor: colors.tint,
+                                            padding: Sizes.padding.sm,
+                                            borderRadius: Sizes.borderRadius.md
+                                        }}
+                                    >
+                                        <Feather
+                                            name="printer"
+                                            size={Sizes.iconSize.md}
+                                            color={colors.onTint}
+                                        />
+                                    </TouchableOpacity>
+
+                                </View>
 
                                 {
                                     receipts.map((receipt, index) => (
@@ -268,7 +311,40 @@ const ReceiptScreen = () => {
             >
                 <Ionicons name="add" size={Sizes.iconSize.lg} color={colors.onTint} />
             </TouchableOpacity>
+
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={3}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+            >
+                <BottomSheetView>
+                    <ReceiptPrintSheet colors={colors} />
+                </BottomSheetView>
+            </BottomSheetModal>
         </>
+    )
+}
+
+const ReceiptPrintSheet = ({ colors }: { colors: any }) => {
+    return (
+        <View style={{
+            flex: 1,
+
+
+        }}>
+
+            <Image
+                source={require("@assets/images/mei_ling_efiling.png")}
+                style={{
+                    width: 400,
+                    height: 500,
+                    resizeMode: "contain",
+                }}
+            />
+
+
+        </View>
     )
 }
 

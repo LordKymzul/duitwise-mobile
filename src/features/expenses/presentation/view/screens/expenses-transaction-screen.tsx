@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, useColorScheme } from "react-native";
-import { COLORS } from "../../../../../core/constant/Colors";
+import { Colors, COLORS } from "../../../../../core/constant/Colors";
 import { Sizes } from "../../../../../core/constant/Sizes";
 import TabButton from "../../../../../core/shared/presentation/components/tab-button";
 import { getSubtitleStyle, getTitleStyle } from "../../../../../core/constant/Texts";
@@ -14,6 +14,7 @@ import { TransactionDetailsData, TransactionDetailsEntity } from "src/core/const
 import PortfolioLineChart from "src/features/portfolio/presentation/view/components/portfolio-line-chart";
 import { formatDateDayandTime } from "src/core/shared/utils/helper";
 import { useEffect, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 
 
 const transactions = [
@@ -93,10 +94,39 @@ const ExpensesTransactionScreen = () => {
             <PortfolioLineChart />
 
 
+            <LinearGradient
+                colors={["#11B57E", "#079A6D"]}
+                style={{
+                    marginHorizontal: Sizes.spacing.lg,
+                    marginVertical: Sizes.spacing.md,
+                    borderRadius: Sizes.borderRadius.md,
+                    padding: Sizes.spacing.lg
+                }}>
+                <View style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: Sizes.spacing.sm,
+                }}>
+                    <FontAwesome5
+                        name="robot"
+                        size={Sizes.iconSize.sm}
+                        color={colors.onTint}
+                    />
+
+                    <Text style={getTitleStyle(Sizes.fontSize.md, colors.onTint)}>
+                        Please be careful you have spend 30% of your income
+                    </Text>
+
+
+                </View>
+            </LinearGradient>
+
+
             <View style={{
                 flexDirection: "column",
                 gap: Sizes.spacing.md,
-                marginTop: Sizes.spacing.lg,
+
                 paddingHorizontal: Sizes.spacing.lg
             }}>
 
@@ -137,35 +167,10 @@ const ExpensesTransactionScreen = () => {
 
             </View>
 
-            <View style={{
-                marginHorizontal: Sizes.spacing.lg,
-            }}>
-                <View style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: Sizes.spacing.md,
-                    borderColor: colors.secondaryContainer,
-                    borderWidth: 1,
-                    borderRadius: Sizes.borderRadius.md,
-                    padding: Sizes.spacing.lg,
 
-                }}>
-                    <FontAwesome5
-                        name="robot"
-                        size={Sizes.iconSize.sm}
-                        color={colors.onBackground}
-                    />
-
-                    <Text style={getTitleStyle(Sizes.fontSize.md, colors.onBackground)}>
-                        Please be careful you have spend 30% of your income
-                    </Text>
-
-
-                </View>
-            </View>
         </View>
     )
 }
+
 
 export default ExpensesTransactionScreen;

@@ -13,6 +13,11 @@ export type RootStackParams = {
     ReceiptAttached: { receipt: ReceiptAttachedEntity },
     LoginPortfolio: {
         bank: BankPortfolio
+    },
+    MainBottomNavbar: undefined,
+    SuccessScreen: {
+        title: string;
+        description: string;
     }
 }
 
@@ -30,3 +35,4 @@ export type PortfolioLoanDetailScreenRouteProp = RouteProp<RootStackParams, 'Por
 export type TransactionDetailsScreenRouteProp = RouteProp<RootStackParams, 'TransactionDetails'>;
 export type ReceiptDetailScreenRouteProp = RouteProp<RootStackParams, 'ReceiptDetail'>;
 export type ReceiptAttachedScreenRouteProp = RouteProp<RootStackParams, 'ReceiptAttached'>;
+export type SuccessScreenRouteProp = RouteProp<RootStackParams, 'SuccessScreen'>;

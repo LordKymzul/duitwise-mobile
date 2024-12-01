@@ -129,6 +129,13 @@ function calculateTotalRecurringPayments(recurringPayments: any): number {
     }, 0);
 }
 
+function calculateCurrentTotalLoanPayment(portfolio: BankPortfolio[]): number {
+    return portfolio.reduce((total, bank) => {
+        const bankTotal = bank.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
+        return total + bankTotal;
+    }, 0);
+}
+
 // Function to calculate DSR
 export function calculateDSR(
     profile: PortfolioData,
@@ -138,10 +145,7 @@ export function calculateDSR(
     selectedLoan: CarFilteredLoanInfo
 ): DSRCalculationResult {
     // Calculate current total monthly loan payments
-    const currentTotalLoanPayment = profile.portfolio.reduce((total, bank) => {
-        const bankTotal = bank.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
-        return total + bankTotal;
-    }, 0);
+    const currentTotalLoanPayment = calculateCurrentTotalLoanPayment(profile.portfolio);
 
     // Calculate total recurring payments using the helper function
     const totalRecurringPayment = calculateTotalRecurringPayments(profile.recurringPayments);
@@ -179,35 +183,13 @@ export function calculateLoanEligibility(
     profile: PortfolioData,
     requestedAmount: number,
     tenure: number,
-    monthlyIncome: number
+    monthlyIncome: number,
+    loan: CarFilteredLoanInfo
 ) {
 
-    let dsr: DSRCalculationResult[] = [];
     try {
-        // First, filter suitable car loans
-        const suitableLoans = filterCarLoans(requestedAmount, tenure, carLoansData.car_loans);
-
-        if (suitableLoans.length === 0) {
-            console.log('No suitable loans found for the given criteria.');
-            return;
-        }
-
-        // Calculate DSR for each suitable loan
-        suitableLoans.forEach(loan => {
-            const dsrResult = calculateDSR(portfolioData, requestedAmount, tenure, monthlyIncome, loan);
-            dsr.push(dsrResult);
-            // console.log(`\nBank: ${loan.bank_name}`);
-            // console.log(`Interest Rate: ${loan.interest_rate}`);
-            // console.log(`Estimated Monthly Payment: RM ${dsrResult.estimatedMonthlyPayment}`);
-            // console.log(`Current DSR: ${dsrResult.currentDSR}%`);
-            // console.log(`Stressed DSR: ${dsrResult.stressedDSR}%`);
-            // console.log(`Current Monthly Commitments: RM ${dsrResult.monthlyCommitments}`);
-            // console.log(`New Monthly Commitment: RM ${dsrResult.newMonthlyCommitment}`);
-            // console.log(`Eligible: ${dsrResult.isEligible ? 'Yes' : 'No'}`);
-        });
-
-        return dsr;
-
+        const dsrResult = calculateDSR(profile, requestedAmount, tenure, monthlyIncome, loan);
+        return dsrResult;
     } catch (error) {
         if (error instanceof Error) {
             console.log(`Error: ${error.message}`);
@@ -302,4 +284,3 @@ export const carLoansData = {
 };
 
 // Example usage
-calculateLoanEligibility(portfolioData, 30000, 7, 8000);

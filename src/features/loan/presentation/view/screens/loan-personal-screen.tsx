@@ -9,6 +9,10 @@ import { BankLoanDetailProps } from "../components/bank-loan-card";
 import { filterPersonalLoans, PersonalFilteredLoan, personalLoanData } from "../../zustand/personal-loan-store";
 import Toast from "react-native-toast-message";
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import ApplyLoanSheet from "../components/apply-loan-sheet";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParams } from "src/core/shared/types/navigation";
+import { NavigationProp } from "@react-navigation/native";
 
 const LoanPersonalScreen = () => {
 
@@ -25,6 +29,24 @@ const LoanPersonalScreen = () => {
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
     const snapPoints = useMemo(() => ["30%", "50%", "90%"], []);
+
+    const [isApplying, setIsApplying] = useState<boolean>(false);
+
+
+    const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+    const handleApplyWithPaduPress = () => {
+        setIsApplying(true);
+        setTimeout(() => {
+            setIsApplying(false);
+            navigation.navigate("SuccessScreen", {
+                title: "Loan Applied",
+                description: "Your loan has been applied successfully"
+            });
+            bottomSheetRef.current?.dismiss();
+        }, 1000);
+    }
+
 
     const handlePresentModalPress = useCallback(() => {
         console.log("present modal");
@@ -79,14 +101,11 @@ const LoanPersonalScreen = () => {
             }
             setFilteredLoans(result);
         } catch (error) {
-            if (error instanceof Error) {
-                Toast.show({
-                    text1: "Error",
-                    text2: error.message,
-                    type: "error"
-                });
-                console.error(`Error: ${error.message}`);
-            }
+            Toast.show({
+                text1: "Error",
+                text2: "An error occurred",
+                type: "error"
+            });
         } finally {
             setIsLoading(false);
         }
@@ -163,7 +182,10 @@ const LoanPersonalScreen = () => {
                             onStressTestPress={() => {
                                 handlePresentModalPress();
                             }}
-                            onApplyPress={() => { }}
+                            onApplyPress={() => {
+                                bottomSheetRef.current?.present();
+                            }}
+                            stressValue={20}
                         />
                     })
                 }
@@ -191,7 +213,13 @@ const LoanPersonalScreen = () => {
                 backdropComponent={renderBackdrop}
             >
                 <BottomSheetView>
-                    <Text>Hello</Text>
+                    <ApplyLoanSheet
+                        applyManuallyPress={() => {
+                            bottomSheetRef.current?.dismiss();
+                        }}
+                        applyWithPaduPress={handleApplyWithPaduPress}
+                        isLoading={isApplying}
+                    />
 
 
                 </BottomSheetView>
